@@ -26,7 +26,7 @@ python scripts/score_reference_metrics_vs_gold.py
 ```
 
 which uses `data/heldout_gold_references.jsonl` as the reference and confirms these metrics are also
-weak (ROUGE-L Kendall tau = 0.15; all far below the judge).
+weak (ROUGE-L Kendall tau = 0.18, the strongest of them; all far below the judge).
 
 ## Contents
 
@@ -43,7 +43,8 @@ data/
   predictions/
     judge_32b.jsonl              LLM judge (32B), frozen before human labeling
     judge_14b.jsonl              LLM judge (14B), robustness
-    judge_generic_prompt.jsonl   judge with a generic prompt (ablation)
+    judge_generic_prompt.jsonl   judge with a generic prompt (ablation, post hoc)
+    judge_codestral.jsonl        cross-family judge (Codestral-22B, post hoc)
     reference_metrics.jsonl      BLEU/ROUGE/CHRF++/METEOR/BM25/BERTScore/raw NLI, held-out
     dev_reference_metrics.jsonl  the same metrics on the development set
     code_nli.jsonl               code-adapted NLI score, held-out
@@ -60,7 +61,8 @@ scripts/
   score_reference_metrics.py     compute the reference/NLI metrics (requires a GPU)
   make_figures.py                regenerate the figures
 figures/
-  *.pdf                          the figures used in the paper
+  fig1_metric_vs_human_heldout.pdf  Figure 1: agreement of each score with the human labels
+  fig3_robustness.pdf               Figure 2: judge-human agreement across models (in-sample sweep)
 ```
 
 ## Regenerating predictions (GPU)
