@@ -1,0 +1,1083 @@
+﻿item_id,language,diff,candidate_message,correctness(0/1/2),notes
+H002,cpp,"--- a/xbmc/network/AirPlayServer.cpp
++++ b/xbmc/network/AirPlayServer.cpp
+int CAirPlayServer::CTCPClient::ProcessRequest (CStdString & responseHeader,
+CStdString authorization = m_httpParser - > getValue ("" authorization "");
+int status = AIRPLAY_STATUS_OK;
+bool needAuth = false;
++
++ if (m_sessionId.IsEmpty ())
++ m_sessionId = "" 00000000 - 0000 - 0000 - 0000 - 000000000000 "";
+if (ServerInstance - > m_usePassword & & ! m_bAuthenticated)
+{",[ airplay ] - handle empty session ids from itunes,1,"빈 session ID에 기본값을 설정하는 변경은 맞지만, iTunes에서 비롯된다는 주장은 diff에서 확인되지 않는다."
+H008,cpp,"--- a/lib/ParseSIL/ParseSIL.cpp
++++ b/lib/ParseSIL/ParseSIL.cpp
+namespace {
+bool parseScopeRef (SILDebugScope * & DS);
+bool parseSILDebugLocation (SILLocation & L, SILBuilder & B,
+bool parsedComma = false);
++ bool parseSpecificSILInstruction (SILBuilder & B, SILInstructionKind Opcode,
++ SourceLoc OpcodeLoc, StringRef OpcodeName,
++ SILInstruction * & ResultVal);
++
+bool parseSILInstruction (SILBuilder & B);
+bool parseCallInstruction (SILLocation InstLoc,
+SILInstructionKind Opcode, SILBuilder & B,
+SILParser::parseKeyPathPatternComponent (KeyPathPatternComponent & component,
+}
+}
+- ///sil - instruction - result::= sil - value - name ' = '
+- ///sil - instruction - result::= ' (' sil - value - name ? ') '
+- ///sil - instruction - result::= ' (' sil - value - name (', ' sil - value - name) * ') '
+- ///sil - instruction - source - info::= (', ' sil - scope - ref) ? (', ' sil - loc) ?
+- ///sil - instruction - def::=
+- ///(sil - instruction - result ' = ') ? sil - instruction sil - instruction - source - info
+- bool SILParser::parseSILInstruction (SILBuilder & B) {
+- // We require SIL instructions to be at the start of a line to assist
+- // recovery .
+- if (! P.Tok.isAtStartOfLine ()) {
+- P.diagnose (P.Tok, diag::expected_sil_instr_start_of_line);
+- return true;
+- }
+-
+- SmallVector < Located < StringRef >, 4 > resultNames;
+- SourceLoc resultClauseBegin;
+-
+- // If the instruction has a name ' % foo = ', parse it .
+- if (P.Tok.is (tok::sil_local_name)) {
+- resultClauseBegin = P.Tok.getLoc ();
+- resultNames.push_back ({P.Tok.getText (), P.Tok.getLoc ()});
+- P.consumeToken (tok::sil_local_name);
+-
+- // If the instruction has a ' (% foo, % bar) = ', parse it .
+- } else if (P.consumeIf (tok::l_paren)) {
+- resultClauseBegin = P.PreviousLoc;
+-
+- if (! P.consumeIf (tok::r_paren)) {
+- while (true) {
+- if (! P.Tok.is (tok::sil_local_name)) {
+- P.diagnose (P.Tok, diag::expected_sil_value_name);
+- return true;
+- }
+-
+- resultNames.push_back ({P.Tok.getText (), P.Tok.getLoc ()});
+- P.consumeToken (tok::sil_local_name);
+-
+- if (P.consumeIf (tok::comma))
+- continue;
+- if (P.consumeIf (tok::r_paren))
+- break;
+-
+- P.diagnose (P.Tok, diag::expected_tok_in_sil_instr, "", "");
+- return true;
+- }
+- }
+- }
+-
+- if (resultClauseBegin.isValid ()) {
+- if (P.parseToken (tok::equal, diag::expected_equal_in_sil_instr))
+- return true;
+- }
+-
+- SILInstructionKind Opcode;
+- SourceLoc OpcodeLoc;
+- StringRef OpcodeName;
+-
+- // Parse the opcode name .
+- if (parseSILOpcode (Opcode, OpcodeLoc, OpcodeName))
+- return true;
+-
++ bool SILParser::parseSpecificSILInstruction (SILBuilder & B,
++ SILInstructionKind Opcode,
++ SourceLoc OpcodeLoc,
++ StringRef OpcodeName,
++ SILInstruction * & ResultVal) {
+SmallVector < SILValue, 4 > OpList;
+SILValue Val;
+SILType Ty;
+bool SILParser::parseSILInstruction (SILBuilder & B) {
+CanType SourceType, TargetType;
+SILValue SourceAddr, DestAddr;
+auto parseSourceAndDestAddress = [&] {
+- return parseFormalTypeAndValue (SourceType, SourceAddr)
+- | | parseVerbatim ("" to "")
+- | | parseFormalTypeAndValue (TargetType, DestAddr);
++ return parseFormalTypeAndValue (SourceType, SourceAddr) | |
++ parseVerbatim ("" to "") | | parseFormalTypeAndValue (TargetType, DestAddr);
+};
+Identifier SuccessBBName, FailureBBName;
+SourceLoc SuccessBBLoc, FailureBBLoc;
+auto parseConditionalBranchDestinations = [&] {
+- return P.parseToken (tok::comma, diag::expected_tok_in_sil_instr, "", "")
+- | | parseSILIdentifier (SuccessBBName, SuccessBBLoc,
+- diag::expected_sil_block_name)
+- | | P.parseToken (tok::comma, diag::expected_tok_in_sil_instr, "", "")
+- | | parseSILIdentifier (FailureBBName, FailureBBLoc,
+- diag::expected_sil_block_name)
+- | | parseSILDebugLocation (InstLoc, B);
++ return P.parseToken (tok::comma, diag::expected_tok_in_sil_instr, "", "") | |
++ parseSILIdentifier (SuccessBBName, SuccessBBLoc,
++ diag::expected_sil_block_name) | |
++ P.parseToken (tok::comma, diag::expected_tok_in_sil_instr, "", "") | |
++ parseSILIdentifier (FailureBBName, FailureBBLoc,
++ diag::expected_sil_block_name) | |
++ parseSILDebugLocation (InstLoc, B);
+};
+//Validate the opcode name, and do opcode - specific parsing logic based on the
+//opcode we find .
+- SILInstruction * ResultVal;
++
+switch (Opcode) {
+case SILInstructionKind::AllocBoxInst: {
+bool hasDynamicLifetime = false;
+bool SILParser::parseSILInstruction (SILBuilder & B) {
+return true;
+SILType Ty;
+- if (parseSILType (Ty)) return true;
++ if (parseSILType (Ty))
++ return true;
+SILDebugVariable VarInfo;
+if (parseSILDebugVar (VarInfo))
+return true;
+bool SILParser::parseSILInstruction (SILBuilder & B) {
+case SILInstructionKind::AbortApplyInst :
+case SILInstructionKind::EndApplyInst: {
+UnresolvedValueName argName;
+- if (parseValueName (argName)) return true;
++ if (parseValueName (argName))
++ return true;
+if (parseSILDebugLocation (InstLoc, B))
+return true;
+bool SILParser::parseSILInstruction (SILBuilder & B) {
+if (parseSILType (Ty) | |
+P.parseToken (tok::comma, diag::expected_tok_in_sil_instr, "", ""))
+return true;
+-
++
+bool Negative = false;
+if (P.Tok.isAnyOperator () & & P.Tok.getText () = = "" - "") {
+Negative = true;
+bool SILParser::parseSILInstruction (SILBuilder & B) {
+P.diagnose (P.Tok, diag::expected_tok_in_sil_instr, "" integer "");
+return true;
+}
+-
++
+auto intTy = Ty.getAs < AnyBuiltinIntegerType > ();
+if (! intTy) {
+P.diagnose (P.Tok, diag::sil_integer_literal_not_integer_type);
+bool SILParser::parseSILInstruction (SILBuilder & B) {
+if (parseSILType (Ty) | |
+P.parseToken (tok::comma, diag::expected_tok_in_sil_instr, "", ""))
+return true;
+-
++
+//The value is expressed as bits .
+if (P.Tok.getKind () ! = tok::integer_literal) {
+P.diagnose (P.Tok, diag::expected_tok_in_sil_instr, "" integer "");
+return true;
+}
+-
++
+auto floatTy = Ty.getAs < BuiltinFloatType > ();
+if (! floatTy) {
+P.diagnose (P.Tok, diag::sil_float_literal_not_float_type);
+bool SILParser::parseSILInstruction (SILBuilder & B) {
+}
+StringRef text = prepareIntegerLiteralForParsing (P.Tok.getText ());
+-
++
+APInt bits (floatTy - > getBitWidth (), 0);
+bool error = text.get","""Update SIL instruction parsing to support new opcode""",0,SIL 명령 파싱을 별도 함수로 추출·재구성하지만 새 opcode 지원 추가는 diff에서 확인되지 않는다.
+H017,cpp,"--- a/src/video_core/textures/decoders.cpp
++++ b/src/video_core/textures/decoders.cpp
+constexpr auto fast_swizzle_table = SwizzleTable < 8, 4, 16 > ();
+* Instead of going gob by gob, we map the coordinates inside a block and manage from
+* those.Block_Width is assumed to be 1 .
+* /
+- void Precise3DProcessBlock (u8 * swizzled_data, u8 * unswizzled_data, const bool unswizzle,
+- const u32 x_start, const u32 y_start, const u32 z_start, const u32 x_end,
+- const u32 y_end, const u32 z_end, const u32 tile_offset,
+- const u32 xy_block_size, const u32 layer_z, const u32 stride_x,
+- const u32 bytes_per_pixel, const u32 out_bytes_per_pixel) {
++ void PreciseProcessBlock (u8 * swizzled_data, u8 * unswizzled_data, const bool unswizzle,
++ const u32 x_start, const u32 y_start, const u32 z_start, const u32 x_end,
++ const u32 y_end, const u32 z_end, const u32 tile_offset,
++ const u32 xy_block_size, const u32 layer_z, const u32 stride_x,
++ const u32 bytes_per_pixel, const u32 out_bytes_per_pixel) {
+std::array < u8 *, 2 > data_ptrs;
+u32 z_address = tile_offset;
+const u32 gob_size_x = 64;
+void Precise3DProcessBlock (u8 * swizzled_data, u8 * unswizzled_data, const bool un
+}
+}
+- /* *
+- * This function unswizzles or swizzles a texture by mapping Linear to BlockLinear Textue .
+- * The body of this function takes care of splitting the swizzled texture into blocks,
+- * and managing the extents of it.Once all the parameters of a single block are obtained,
+- * the function calls ' 3DProcessBlock ' to process that particular Block .
+- *
+- * Documentation for the memory layout and decoding can be found at :
+- * https :// envytools.readthedocs.io/en/latest/hw/memory/g80 - surface.html # blocklinear - surfaces
+- * /
+- void Precise3DSwizzledData (u8 * swizzled_data, u8 * unswizzled_data, const bool unswizzle,
+- const u32 width, const u32 height, const u32 depth,
+- const u32 bytes_per_pixel, const u32 out_bytes_per_pixel,
+- const u32 block_height, const u32 block_depth) {
+- auto div_ceil = [] (const u32 x, const u32 y) {return ((x + y - 1)/y);};
+- const u32 stride_x = width * out_bytes_per_pixel;
+- const u32 layer_z = height * stride_x;
+- const u32 gob_x_bytes = 64;
+- const u32 gob_elements_x = gob_x_bytes/bytes_per_pixel;
+- const u32 gob_elements_y = 8;
+- const u32 gob_elements_z = 1;
+- const u32 block_x_elements = gob_elements_x;
+- const u32 block_y_elements = gob_elements_y * block_height;
+- const u32 block_z_elements = gob_elements_z * block_depth;
+- const u32 blocks_on_x = div_ceil (width, block_x_elements);
+- const u32 blocks_on_y = div_ceil (height, block_y_elements);
+- const u32 blocks_on_z = div_ceil (depth, block_z_elements);
+- const u32 blocks = blocks_on_x * blocks_on_y * blocks_on_z;
+- const u32 gob_size = gob_x_bytes * gob_elements_y * gob_elements_z;
+- const u32 xy_block_size = gob_size * block_height;
+- const u32 block_size = xy_block_size * block_depth;
+- u32 tile_offset = 0;
+- for (u32 zb = 0; zb < blocks_on_z; zb + +) {
+- const u32 z_start = zb * block_z_elements;
+- const u32 z_end = std::min (depth, z_start + block_z_elements);
+- for (u32 yb = 0; yb < blocks_on_y; yb + +) {
+- const u32 y_start = yb * block_y_elements;
+- const u32 y_end = std::min (height, y_start + block_y_elements);
+- for (u32 xb = 0; xb < blocks_on_x; xb + +) {
+- const u32 x_start = xb * block_x_elements;
+- const u32 x_end = std::min (width, x_start + block_x_elements);
+- Precise3DProcessBlock (swizzled_data, unswizzled_data, unswizzle, x_start, y_start,
+- z_start, x_end, y_end, z_end, tile_offset, xy_block_size,
+- layer_z, stride_x, bytes_per_pixel, out_bytes_per_pixel);
+- tile_offset + = block_size;
+- }
+- }
+- }
+- }
+-
+/ * *
+* This function manages ALL the GOBs (Group of Bytes) Inside a single block .
+* Instead of going gob by gob, we map the coordinates inside a block and manage from
+* those.Block_Width is assumed to be 1 .
+* /
+- void Fast3DProcessBlock (u8 * swizzled_data, u8 * unswizzled_data, const bool unswizzle,
+- const u32 x_start, const u32 y_start, const u32 z_start, const u32 x_end,
+- const u32 y_end, const u32 z_end, const u32 tile_offset,
+- const u32 xy_block_size, const u32 layer_z, const u32 stride_x,
+- const u32 bytes_per_pixel, const u32 out_bytes_per_pixel) {
++ void FastProcessBlock (u8 * swizzled_data, u8 * unswizzled_data, const bool unswizzle,
++ const u32 x_start, const u32 y_start, const u32 z_start, const u32 x_end,
++ const u32 y_end, const u32 z_end, const u32 tile_offset,
++ const u32 xy_block_size, const u32 layer_z, const u32 stride_x,
++ const u32 bytes_per_pixel, const u32 out_bytes_per_pixel) {
+std::array < u8 *, 2 > data_ptrs;
+u32 z_address = tile_offset;
+const u32 x_startb = x_start * bytes_per_pixel;
+void Fast3DProcessBlock (u8 * swizzled_data, u8 * unswizzled_data, const bool unswi
+* This function unswizzles or swizzles a texture by mapping Linear to BlockLinear Textue .
+* The body of this function takes care of splitting the swizzled texture into blocks,
+* and managing the extents of it.Once all the parameters of a single block are obtained,
+- * the function calls ' 3DProcessBlock ' to process that particular Block .
++ * the function calls ' ProcessBlock ' to process that particular Block .
+*
+* Documentation for the memory layout and decoding can be found at :
+* https :// envytools.readthedocs.io/en/latest/hw/memory/g80 - surface.html # blocklinear - surfaces
+* /
+- void Fast3DSwizzledData (u8 * swizzled_data, u8 * unswizzled_data, const bool unswizzle,
+- const u32 width, const u32 height, const u32 depth,
+- const u32 bytes_per_pixel, const u32 out_bytes_per_pixel,
+- const u32 block_height, const u32 block_depth) {
++ template < bool fast >
++ void SwizzledData (u8 * swizzled_data, u8 * unswizzled_data, const bool unswizzle, const u32 width,
++ const u32 height, const u32 depth, const u32 bytes_per_pixel,
++ const u32 out_bytes_per_pixel, const u32 block_height, const u32 block_depth) {
+auto div_ceil = [] (const u32 x, const u32 y) {return ((x + y - 1)/y);};
+const u32 stride_x = width * out_bytes_per_pixel;
+","""Refactored Precise3DProcessBlock to FastProcessBlock""",0,"Precise3DProcessBlock은 PreciseProcessBlock으로, Fast3DProcessBlock은 FastProcessBlock으로 바뀌므로 제시한 source-target 관계가 틀리다."
+H018,cpp,"--- a/Telegram/SourceFiles/dialogs/dialogs_inner_widget.cpp
++++ b/Telegram/SourceFiles/dialogs/dialogs_inner_widget.cpp
+bool InnerWidget::updateReorderPinned (QPoint localPosition) {
+const auto delta = [&] {
+if (localPosition.y () < _visibleTop) {
+return localPosition.y () - _visibleTop;
++ } else if (_openedFolder & & localPosition.y () > _visibleBottom) {
++ return localPosition.y () - _visibleBottom;
+}
+return 0;
+} ();","""Update reorder pinned method in dialogs_inner_widget.cpp""",2,"updateReorderPinned에서 열린 폴더의 하단 경계 밖 드래그 delta 처리를 추가하며, 메시지는 수정 대상과 행위를 일반적으로 정확히 지칭한다."
+H025,cs,"--- a/Emby.Server.Implementations/Networking/NetworkManager.cs
++++ b/Emby.Server.Implementations/Networking/NetworkManager.cs
+private static IEnumerable < PhysicalAddress > GetMacAddressesInternal ()
+= > NetworkInterface.GetAllNetworkInterfaces ()
+. Where (i = > i.NetworkInterfaceType ! = NetworkInterfaceType.Loopback)
+. Select (x = > x.GetPhysicalAddress ())
+- . Where (x = > x ! = null & & x ! = PhysicalAddress.None);
++ . Where (x = > ! x.Equals (PhysicalAddress.None));
+private void OnNetworkAvailabilityChanged (object sender, NetworkAvailabilityEventArgs e)
+{",Update Emby . Server . Implementations / Networking / NetworkManager . cs,2,NetworkManager.cs의 MAC 주소 필터 조건을 수정한 것이므로 일반적인 파일 업데이트 설명은 직접 뒷받침되고 모순이 없다.
+H038,cs,"--- a/src/OrleansRuntime/GrainTypeManager/SiloAssemblyLoader.cs
++++ b/src/OrleansRuntime/GrainTypeManager/SiloAssemblyLoader.cs
+private static void LogGrainTypesFound (TraceLogger logger, Dictionary < string, Gr
+if (! typeof (ISystemTarget).IsAssignableFrom (grainType.Type))
+{
+int grainClassTypeCode = CodeGeneration.GrainInterfaceData.GetGrainClassTypeCode (grainType.Type);
+- sb.AppendFormat ("" Grain class {0} [{1} (0x {2})] from {3}.dll implementing interfaces: "",
++ sb.AppendFormat ("" Grain class {0}.{1} [{2} (0x {3})] from {4}.dll implementing interfaces: "",
++ grainType.Type.Namespace,
+TypeUtils.GetTemplatedName (grainType.Type),
+grainClassTypeCode,
+grainClassTypeCode.ToString ("" X ""),","""Refactored GrainTypeManager SiloAssemblyLoader logging""",2,GrainTypeManager의 SiloAssemblyLoader 로깅 형식을 namespace 포함 형태로 리팩터링한다.
+H042,go,"--- a/providers/vultr/vultrProvider.go
++++ b/providers/vultr/vultrProvider.go
+@@ -7,6 +7,7 @@ import (
+""fmt""
+""strings""
++ ""golang.org/x/net/idna""
+""golang.org/x/oauth2""
+""github.com/StackExchange/dnscontrol/v3/models""
+@@ -111,6 +112,20 @@ func (api *vultrProvider) GetZoneRecords(domain string) (models.Records, error)
+func (api *vultrProvider) GetDomainCorrections(dc *models.DomainConfig) ([]*models.Correction, error) {
+dc.Punycode()
++ for _, rec := range dc.Records {
++ switch rec.Type {// #rtype_variations
++ case ""ALIAS"", ""MX"", ""NS"", ""CNAME"", ""PTR"", ""SRV"", ""URL"", ""URL301"", ""FRAME"", ""R53_ALIAS"", ""NS1_URLFWD"", ""AKAMAICDN"", ""CLOUDNS_WR"":
++ // These rtypes are hostnames, therefore need to be converted (unlike, for example, an AAAA record)
++ t, err := idna.ToUnicode(rec.GetTargetField())
++ if err != nil {
++ return nil, err
++ }
++ rec.SetTarget(t)
++ default:
++ // Nothing to do.
++ }
++ }
++
+curRecords, err := api.GetZoneRecords(dc.Name)
+if err != nil {
+return nil, err
+@@ -119,10 +134,14 @@ func (api *vultrProvider) GetDomainCorrections(dc *models.DomainConfig) ([]*mode
+models.PostProcessRecords(curRecords)
+var corrections []*models.Correction
+- if !diff2.EnableDiff2 || true {// Remove ""|| true"" when diff2 version arrives
+-
++ var create, delete, modify diff.Changeset
++ if !diff2.EnableDiff2 {
+differ := diff.New(dc)
+- _, create, delete, modify, err := differ.IncrementalDiff(curRecords)
++ _, create, delete, modify, err = differ.IncrementalDiff(curRecords)
++ } else {
++ differ := diff.NewCompat(dc)
++ _, create, delete, modify, err = differ.IncrementalDiff(curRecords)
++ }
+if err != nil {
+return nil, err
+}
+@@ -161,11 +180,6 @@ func (api *vultrProvider) GetDomainCorrections(dc *models.DomainConfig) ([]*mode
+return corrections, nil
+}
+- // Insert Future diff2 version here.
+-
+- return corrections, nil
+- }
+-
+// GetNameservers gets the Vultr nameservers for a domain
+func (api *vultrProvider) GetNameservers(domain string) ([]*models.Nameserver, error) {
+return models.ToNameservers(defaultNS)
+@@ -220,6 +234,16 @@ func toRecordConfig(domain string, r govultr.DomainRecord) (*models.RecordConfig
+}
+rc.SetLabel(r.Name, domain)
++ switch rtype := r.Type; rtype {
++ case ""ALIAS"", ""MX"", ""NS"", ""CNAME"", ""PTR"", ""SRV"", ""URL"", ""URL301"", ""FRAME"", ""R53_ALIAS"", ""NS1_URLFWD"", ""AKAMAICDN"", ""CLOUDNS_WR"":
++ var err error
++ data, err = idna.ToUnicode(data)
++ if err != nil {
++ return nil, err
++ }
++ default:
++ }
++
+switch rtype := r.Type; rtype {
+case ""CNAME"", ""NS"":
+rc.Type = r.Type
+@@ -289,6 +313,9 @@ func toVultrRecord(dc *models.DomainConfig, rc *models.RecordConfig, vultrID str
+}
+switch rtype := rc.Type; rtype {// #rtype_variations
+case ""SRV"":
++ if data == """" {
++ data = "".""
++ }
+r.Data = fmt.Sprintf(""%v %v %s"", rc.SrvWeight, rc.SrvPort, data)
+case ""CAA"":
+r.Data = fmt.Sprintf(`%v %s ""%s""`, rc.CaaFlag, rc.CaaTag, rc.GetTargetField())",VULTR: Adopt diff2 in compatibility mode and fix handling of some integrations tests,1,diff2 compatibility 분기 도입은 정확하지만 integration tests 처리 수정이라는 표현은 diff에서 직접 확인되지 않는다.
+H043,go,"--- a/pkg/daemon/daemon_test.go
++++ b/pkg/daemon/daemon_test.go
+@@ -128,38 +128,6 @@ func TestCompareOSImageURL(t *testing.T) {
+}
+}
+- func TestDaemonOnceFromNoPanic(t *testing.T) {
+- if _, err := os.Stat(""/proc/sys/kernel/random/boot_id""); os.IsNotExist(err) {
+- t.Skip(""we're not on linux"")
+- }
+-
+- exitCh := make(chan error)
+- defer close(exitCh)
+- stopCh := make(chan struct{})
+- defer close(stopCh)
+-
+- // This is how a onceFrom daemon is initialized
+- // and it shouldn't panic assuming kubeClient is there
+- dn, err := New(
+- ""/"",
+- ""testnodename"",
+- ""testos"",
+- NewNodeUpdaterClient(),
+- """",
+- ""test"",
+- false,
+- nil,
+- k8sfake.NewSimpleClientset(),
+- false,
+- """",
+- nil,
+- exitCh,
+- stopCh,
+- )
+- require.Nil(t, err)
+- require.NotPanics(t, func() {dn.triggerUpdateWithMachineConfig(&mcfgv1.MachineConfig{}, &mcfgv1.MachineConfig{})})
+- }
+-
+type fixture struct {
+t *testing.T","daemon: Remove dummy OnceFrom Test
+Now that the daemon tries to talk to the systemd journal, this unit
+test hangs in my dev environment.  We can't really support this
+without mocking a lot more, and it's not really covering much
+interesting right now.  Delete it.",2,TestDaemonOnceFromNoPanic 테스트 전체를 삭제하므로 핵심 변경은 정확하다.
+H045,go,"--- a/cmd/machine-config-controller/start.go
++++ b/cmd/machine-config-controller/start.go
+@@ -79,6 +79,7 @@ func runStartCmd(cmd *cobra.Command, args []string) {
+}
+func startControllers(ctx *common.ControllerContext) error {
++ // Our primary MCs come from here
+go template.New(
+rootOpts.templates,
+ctx.InformerFactory.Machineconfiguration().V1().ControllerConfigs(),
+@@ -87,6 +88,18 @@ func startControllers(ctx *common.ControllerContext) error {
+ctx.ClientBuilder.MachineConfigClientOrDie(""template-controller""),
+).Run(2, ctx.Stop)
++ // Add all ""sub-renderers here""
++ go kubeletconfig.New(
++ rootOpts.templates,
++ ctx.InformerFactory.Machineconfiguration().V1().MachineConfigPools(),
++ ctx.InformerFactory.Machineconfiguration().V1().ControllerConfigs(),
++ ctx.InformerFactory.Machineconfiguration().V1().KubeletConfigs(),
++ ctx.ClientBuilder.KubeClientOrDie(""kubelet-config-controller""),
++ ctx.ClientBuilder.MachineConfigClientOrDie(""kubelet-config-controller""),
++ ).Run(2, ctx.Stop)
++
++ // The renderer creates ""rendered"" MCs from the MC fragments generated by
++ // the above sub-controllers, which are then consumed by the node controller
+go render.New(
+ctx.InformerFactory.Machineconfiguration().V1().MachineConfigPools(),
+ctx.InformerFactory.Machineconfiguration().V1().MachineConfigs(),
+@@ -94,6 +107,7 @@ func startControllers(ctx *common.ControllerContext) error {
+ctx.ClientBuilder.MachineConfigClientOrDie(""render-controller""),
+).Run(2, ctx.Stop)
++ // The node controller consumes data written by the above
+go node.New(
+ctx.InformerFactory.Machineconfiguration().V1().MachineConfigPools(),
+ctx.KubeInformerFactory.Core().V1().Nodes(),
+@@ -101,14 +115,5 @@ func startControllers(ctx *common.ControllerContext) error {
+ctx.ClientBuilder.MachineConfigClientOrDie(""node-update-controller""),
+).Run(2, ctx.Stop)
+- go kubeletconfig.New(
+- rootOpts.templates,
+- ctx.InformerFactory.Machineconfiguration().V1().MachineConfigPools(),
+- ctx.InformerFactory.Machineconfiguration().V1().ControllerConfigs(),
+- ctx.InformerFactory.Machineconfiguration().V1().KubeletConfigs(),
+- ctx.ClientBuilder.KubeClientOrDie(""kubelet-config-controller""),
+- ctx.ClientBuilder.MachineConfigClientOrDie(""kubelet-config-controller""),
+- ).Run(2, ctx.Stop)
+-
+return nil
+}","controller: Start sub-controllers in order of dependency
+The render controller needs kubelet data, so start it first.
+And add a bit of docs.",2,kubelet config controller를 render controller보다 먼저 시작하도록 이동하고 의존 순서 주석을 추가한다.
+H050,go,"--- a/pkg/controller/template/render_test.go
++++ b/pkg/controller/template/render_test.go
+@@ -31,9 +31,6 @@ func TestCloudProvider(t *testing.T) {
+featureGate *configv1.FeatureGate
+res string
+}{{
+- platform: configv1.AWSPlatformType,
+- res: ""aws"",
+- }, {
+platform: configv1.AWSPlatformType,
+featureGate: newFeatures(""cluster"", ""CustomNoUpgrade"", []string{cloudprovider.ExternalCloudProviderFeature}, nil),
+res: ""external"",
+@@ -48,11 +45,22 @@ func TestCloudProvider(t *testing.T) {
+}, {
+platform: configv1.GCPPlatformType,
+featureGate: newFeatures(""cluster"", ""CustomNoUpgrade"", []string{cloudprovider.ExternalCloudProviderFeature}, nil),
+- res: ""gce"",
++ res: ""external"",
++ }, {
++ platform: configv1.VSpherePlatformType,
++ featureGate: newFeatures(""cluster"", ""CustomNoUpgrade"", []string{cloudprovider.ExternalCloudProviderFeature}, nil),
++ res: ""external"",
++ }, {
++ platform: configv1.OpenStackPlatformType,
++ featureGate: newFeatures(""cluster"", ""CustomNoUpgrade"", []string{cloudprovider.ExternalCloudProviderFeature}, nil),
++ res: ""external"",
+}, {
+platform: configv1.OpenStackPlatformType,
+featureGate: newFeatures(""cluster"", ""CustomNoUpgrade"", nil, []string{cloudprovider.ExternalCloudProviderFeature}),
+res: ""openstack"",
++ }, {
++ platform: configv1.AWSPlatformType,
++ res: ""aws"",
+}, {
+platform: configv1.OpenStackPlatformType,
+res: ""openstack"",
+@@ -157,7 +165,15 @@ func TestCloudConfigFlag(t *testing.T) {
+option = a
+`,
+featureGate: newFeatures(""cluster"", ""CustomNoUpgrade"", []string{cloudprovider.ExternalCloudProviderFeature}, nil),
+- res: ""--cloud-config=/etc/kubernetes/cloud.conf"",
++ res: """",
++ }, {
++ platform: configv1.VSpherePlatformType,
++ content: `
++ [dummy-config]
++ option = a
++ `,
++ featureGate: newFeatures(""cluster"", ""CustomNoUpgrade"", []string{cloudprovider.ExternalCloudProviderFeature}, nil),
++ res: """",
+}, {
+platform: configv1.AzurePlatformType,
+content: `","""Update cloud provider configuration for external cloud providers""",2,외부 cloud provider feature에 맞춰 cloud provider 및 cloud-config 기대 설정을 갱신하므로 메시지가 중심 변경을 포착한다.
+H054,go,"--- a/services/etcd.go
++++ b/services/etcd.go
+@@ -28,7 +28,6 @@ const (
+EtcdDataDir = ""/var/lib/rancher/etcd/""
+EtcdInitWaitTime = 10
+EtcdSnapshotWaitTime = 5
+- EtcdSnapshotCompressedExtension = ""zip""
+EtcdPermFixContainerName = ""etcd-fix-perm""
+)
+@@ -379,7 +378,6 @@ func RunEtcdSnapshotSave(ctx context.Context, etcdHost *hosts.Host, prsMap map[s
+}
+func DownloadEtcdSnapshotFromS3(ctx context.Context, etcdHost *hosts.Host, prsMap map[string]v3.PrivateRegistry, etcdSnapshotImage string, name string, es v3.ETCDService) error {
+-
+log.Infof(ctx, ""[etcd] Get snapshot [%s] on host [%s]"", name, etcdHost.Address)
+s3Backend := es.BackupConfig.S3BackupConfig
+if len(s3Backend.Endpoint) == 0 || len(s3Backend.BucketName) == 0 {
+@@ -741,7 +739,11 @@ func setEtcdPermissions(ctx context.Context, etcdHost *hosts.Host, prsMap map[st
+hostCfg := &container.HostConfig{
+Binds: []string{dataBind},
+}
+- return docker.DoRunOnetimeContainer(ctx, etcdHost.DClient, imageCfg, hostCfg, EtcdPermFixContainerName, etcdHost.Address, ETCDRole, prsMap)
++ if err := docker.DoRunOnetimeContainer(ctx, etcdHost.DClient, imageCfg, hostCfg, EtcdPermFixContainerName,
++ etcdHost.Address, ETCDRole, prsMap); err != nil {
++ return err
++ }
++ return docker.DoRemoveContainer(ctx, etcdHost.DClient, EtcdPermFixContainerName, etcdHost.Address)
+}
+func getSanitizedSnapshotCmd(imageCfg *container.Config, bc *v3.BackupConfig) string {",Remove unused constants and simplify permission fix container handling.,2,사용하지 않는 snapshot 확장자 상수를 제거하고 permission-fix 컨테이너 실행 후 제거하도록 처리를 단순화한다.
+H059,go,"--- a/lvmd/lvservice.go
++++ b/lvmd/lvservice.go
+@@ -306,14 +306,39 @@ func (s *lvService) ResizeLV(_ context.Context, req *proto.ResizeLVRequest) (*pr
+return nil, status.Error(codes.OutOfRange, ""shrinking volume size is not allowed"")
+}
+- free, err := vg.Free()
++ free := uint64(0)
++ var pool *command.ThinPool
++ switch dc.Type {
++ case TypeThick:
++ free, err = vg.Free()
+if err != nil {
+- log.Error(""failed to free VG"", map[string]interface{}{
++ log.Error(""failed to get free bytes"", map[string]interface{}{
++ log.FnError: err,
++ })
++ return nil, status.Error(codes.Internal, err.Error())
++ }
++ case TypeThin:
++ pool, err = vg.FindPool(dc.ThinPoolConfig.Name)
++ if err != nil {
++ log.Error(""failed to get thinpool"", map[string]interface{}{
+log.FnError: err,
+- ""name"": req.GetName(),
+})
+return nil, status.Error(codes.Internal, err.Error())
+}
++ tpu, err := pool.Free()
++ if err != nil {
++ log.Error(""failed to get free bytes"", map[string]interface{}{
++ log.FnError: err,
++ })
++ return nil, status.Error(codes.Internal, err.Error())
++ }
++ free = uint64(math.Floor(dc.ThinPoolConfig.OverprovisionRatio*float64(tpu.SizeBytes))) - tpu.VirtualBytes
++ default:
++ // technically this block will not be hit however make sure we return error
++ // in such cases where deviceclass target is neither thick or thinpool
++ return nil, status.Error(codes.Internal, fmt.Sprintf(""unsupported device class target: %s"", dc.Type))
++ }
++
+if free < (requested - current) {
+log.Error(""no enough space left on VG"", map[string]interface{}{
+log.FnError: err,","""Fixes ResizeLV function and updates logging""",2,ResizeLV가 thick/thin 유형별 여유 공간을 계산하도록 수정되고 오류 로그도 갱신된다.
+H064,java,"--- a/java/client/src/org/openqa/selenium/firefox/FirefoxBinary.java
++++ b/java/client/src/org/openqa/selenium/firefox/FirefoxBinary.java
+public void startProfile (FirefoxProfile profile, File profileDir, String...comm
+startFirefoxProcess (command);
+}
+- protected void startFirefoxProcess (CommandLine command) throws IOException {
++ protected void startFirefoxProcess (CommandLine command) {
+process = command;
+command.executeAsync ();
+}
+protected String extractAndCheck (File profileDir, String noFocusSoName,
+/ * *
+* Waits for the process to execute, returning the command output taken from the profile ' s
+* execution .
+- *
+- * @ throws InterruptedException if we are interrupted while waiting for the process to launch
+- * @ throws IOException if there is a problem with reading the input stream of the launching
+- * process
+* /
+- public void waitFor () throws InterruptedException, IOException {
++ public void waitFor () {
+process.waitFor ();
+}
+public void waitFor () throws InterruptedException, IOException {
+* execution .
+*
+* @ param timeout the maximum time to wait in milliseconds
+- * @ throws InterruptedException if we are interrupted while waiting for the process to launch
+- * @ throws IOException if there is a problem with reading the input stream of the launching
+- * process
+* /
+- public void waitFor (long timeout) throws InterruptedException, IOException {
++ public void waitFor (long timeout) {
+process.waitFor (timeout);
+}
+public void waitFor (long timeout) throws InterruptedException, IOException {
+* Gets all console output of the binary.Output retrieval is non - destructive and non - blocking .
+*
+* @ return the console output of the executed binary .
+- * @ throws IOException IO exception reading from the output stream of the firefox process
+* /
+- public String getConsoleOutput () throws IOException {
++ public String getConsoleOutput () {
+if (process = = null) {
+return null;
+}",Deleting declaration of exceptions that can never be thrown ( they are wrapped to WebDriverException ),1,throws 선언 삭제는 정확하지만 예외가 WebDriverException으로 wrapping된다는 이유는 이 diff만으로 확인되지 않는다.
+H069,java,"--- a/codec - http/src/main/java/io/netty/handler/codec/http/websocketx/WebSocketClientHandshaker08.java
++++ b/codec - http/src/main/java/io/netty/handler/codec/http/websocketx/WebSocketClientHandshaker08.java
+public void finishHandshake (Channel channel, HttpResponse response) {
+String subprotocol = response.getHeader (Names.SEC_WEBSOCKET_PROTOCOL);
+setActualSubprotocol (subprotocol);
++ setHandshakeComplete ();
++
+channel.getPipeline ().replace (HttpResponseDecoder.class, "" ws - decoder "",
+new WebSocket08FrameDecoder (false, allowExtensions, this.getMaxFramePayloadLength ()));
+- setHandshakeComplete ();
+}
+}",Refactor WebSocketClientHandshaker08 to use a WebSocket08FrameDecoder.,0,WebSocket08FrameDecoder 사용은 변경 전에도 존재하며 실제 변경은 setHandshakeComplete 호출 순서 이동이다.
+H076,java,"similarity index 98 %
+rename from transport/src/main/java/io/netty/channel/group/ImmediateEventExecutor.java
+rename to common/src/main/java/io/netty/util/concurrent/ImmediateEventExecutor.java
+--- a/transport/src/main/java/io/netty/channel/group/ImmediateEventExecutor.java
++++ b/common/src/main/java/io/netty/util/concurrent/ImmediateEventExecutor.java
+* License for the specific language governing permissions and limitations
+* under the License .
+* /
+- package io.netty.channel.group;
++ package io.netty.util.concurrent;
+import io.netty.util.concurrent.AbstractEventExecutor;
+import io.netty.util.concurrent.DefaultPromise;","""Rename ImmediateEventExecutor.java and move to common package""",1,파일을 common 패키지로 이동하고 package를 바꾼 것은 맞지만 파일명 자체는 변경되지 않았다.
+H081,js,"--- a/lib/model.js
++++ b/lib/model.js
+function convertTo_id (val) {
+}
+}
+if (val.isMongooseArray) {
+- return new MongooseArray (val, val._path, val._parent);
++ return val._parent.schema.path (val._path).cast (val, val._parent);
+}
+return [].concat (val);",Restored ability to override populated array caster from 4 . 6 . 2,1,schema path의 cast를 사용해 caster override와 관련된 변경은 맞지만 restored 및 4.6.2 출처는 diff로 검증되지 않는다.
+H084,js,"--- a/src/component.js
++++ b/src/component.js
+export default function Component (props, context) {
+/ * * @ private * /
+this._renderCallbacks = [];
+/ * * @ public * /
+- this.prevState = this.prevProps = this.prevContext = this.base = null;
++ this.prevState = this.prevProps = this.prevContext = this.base = this._parentComponent = this._component = null;
+/ * * @ public * /
+this.context = context | | null;
+/ * * @ type {object} * /",Avoid shape mutation by adding ref properties to Component in the constructor,2,참조 속성을 생성자에서 null로 미리 선언해 이후 속성 추가에 따른 shape mutation을 피하는 변경이다.
+H100,js,"--- a/Libraries/Lists/ListView/ListViewDataSource.js
++++ b/Libraries/Lists/ListView/ListViewDataSource.js
+class ListViewDataSource {
+* this function as the ` dataBlob ` .
+* /
+cloneWithRows (
+- dataBlob: Array < any > | {[key: string]: any},
+- rowIdentities: ? Array < string >
++ dataBlob: $ ReadOnlyArray < any > | {+ [key: string]: any},
++ rowIdentities: ? $ ReadOnlyArray < string >
+): ListViewDataSource {
+- var rowIds = rowIdentities ? [rowIdentities]: null;
++ var rowIds = rowIdentities ? [[...rowIdentities]]: null;
+if (! this._sectionHeaderHasChanged) {
+this._sectionHeaderHasChanged = () = > false;
+}","""Update ListViewDataSource cloneWithRows function""",2,cloneWithRows의 입력 타입과 rowIdentities 복사 방식을 갱신하므로 일반적인 함수 업데이트 설명은 정확하다.
+H107,php,"--- a/addons/default/visiosoft/advs-module/src/Http/Controller/advsController.php
++++ b/addons/default/visiosoft/advs-module/src/Http/Controller/advsController.php
+@@ -782,8 +782,14 @@ class AdvsController extends PublicController
+}
+}
+- $get_categories = in_array($adv->cat1, setting_value('visiosoft.module.advs::get_categories'));
+- $adv->is_get_adv = ($request->is_get_adv and $get_categories) ? true: false;
++ $get_categories_status = false;
++ if ($get_categories = setting_value('visiosoft.module.advs::get_categories') and $get_categories = in_array($adv->cat1, $get_categories)) {
++ $get_categories_status = true;
++ }
++
++ $adv->is_get_adv = ($request->is_get_adv and $get_categories_status) ? true: false;
++
++
+$adv->save();
+//algolia Search Module
+@@ -803,7 +809,9 @@ class AdvsController extends PublicController
+$CloudinaryModel = new VideoModel();
+$CloudinaryModel->updateRequest($request);
+- if ($request->url != """") {$adv->save();}
++ if ($request->url != """") {
++ $adv->save();
++ }
+}
+if ($this->adv_model->is_enabled('customfields')) {
+app('Visiosoft\CustomfieldsModule\Http\Controller\cfController')->store($adv, $request);",Refactor advsController.php to improve code readability and maintainability.,2,조건 계산을 명시적인 단계로 풀고 단일행 조건을 블록화하는 등 가독성 중심 리팩터링으로 자연스럽게 설명된다.
+H117,php,"--- a/core/console/commands/ImportController.php
++++ b/core/console/commands/ImportController.php
+@@ -4,7 +4,6 @@ namespace luya\console\commands;
+use Yii;
+use yii\console\widgets\Table;
+- use yii\helpers\VarDumper;
+use luya\Boot;
+use luya\admin\models\Config;
+use luya\console\Command;
+@@ -209,12 +208,8 @@ class ImportController extends Command implements ImportControllerInterface
+foreach ($logs as $key => $value) {
+if (is_array($value)) {
+foreach ($value as $kk => $kv) {
+- if (!is_scalar($kv)) {
+- $rows[] = [$kk, VarDumper::dumpAsString($kv)];
+- } else {
+$rows[] = [$kk, $kv];
+}
+- }
+} else {
+$rows[] = [$key, $value];
+}","""Fix scalar check in ImportController""",2,ImportController에서 scalar 분기와 VarDumper 사용을 제거해 scalar 처리 검사를 수정한다.
+H120,php,"--- a/examples/public/implicit.php
++++ b/examples/public/implicit.php
+@@ -41,7 +41,6 @@ $app = new App([
+$privateKeyPath,
+'lxZFUEsBCJ2Yb14IF2ygAHI5N4+ZAUXXaSeeJm6+twsUmIen'
+);
+- $server->setEncryptionKey('lxZFUEsBCJ2Yb14IF2ygAHI5N4+ZAUXXaSeeJm6+twsUmIen');
+// Enable the implicit grant on the server with a token TTL of 1 hour
+$server->enableGrantType(new ImplicitGrant(new \DateInterval('PT1H')));","""Update implicit.php encryption key""",0,encryption key 값을 갱신한 것이 아니라 setEncryptionKey 호출 자체를 삭제한다.
+H125,py,"--- a/tornado/ioloop.py
++++ b/tornado/ioloop.py
+def add_callback (self, callback, * args, * * kwargs) :
+list_empty = not self._callbacks
+self._callbacks.append (functools.partial (
+stack_context.wrap (callback), * args, * * kwargs))
+- if list_empty and thread.get_ident () ! = self._thread_ident :
+- # If we ' re in the IOLoop ' s thread, we know it ' s not currently
+- # polling.If we ' re not, and we added the first callback to an
+- # empty list, we may need to wake it up (it may wake up on its
+- # own, but an occasional extra wake is harmless).Waking
+- # up a polling IOLoop is relatively expensive, so we try to
+- # avoid it when we can .
+- self._waker.wake ()
++ if list_empty and thread.get_ident () ! = self._thread_ident :
++ # If we ' re in the IOLoop ' s thread, we know it ' s not currently
++ # polling.If we ' re not, and we added the first callback to an
++ # empty list, we may need to wake it up (it may wake up on its
++ # own, but an occasional extra wake is harmless).Waking
++ # up a polling IOLoop is relatively expensive, so we try to
++ # avoid it when we can .
++ self._waker.wake ()
+def add_callback_from_signal (self, callback, * args, * * kwargs) :
+with stack_context.NullContext () :","In add_callback , hold the lock while writing to the waker pipe .",1,waker 호출의 위치 이동은 보이지만 제공된 diff 문맥에는 lock이 나타나지 않아 핵심 주장을 완전히 검증할 수 없다.
+H130,py,"--- a/zipline/pipeline/factors/factor.py
++++ b/zipline/pipeline/factors/factor.py
+def if_not_float64_tell_caller_to_use_isnull (f) :
+directing the user to ` isnull ` or ` notnull ` instead .
+"" "" ""
+@ wraps (f)
+- def wrapped_method (self, * args, * * kwargs) :
++ def wrapped_method (self) :
+if self.dtype ! = float64_dtype :
+raise TypeError (
+"" {meth} () was called on a factor of dtype {dtype}.\ n ""
+def wrapped_method (self, * args, * * kwargs) :
+dtype = self.dtype,
+),
+)
+- return f (self, * args, * * kwargs)
++ return f (self)
+return wrapped_method",Refactor if_not_float64_tell_caller_to_use_isnull to use isnull or notnull instead.,0,변경은 wrapper가 추가 인자를 받지 않도록 제한한 것이며 isnull 또는 notnull을 사용하도록 바꾸지 않았다.
+H135,py,"--- a/Lib/httplib.py
++++ b/Lib/httplib.py
+def readheaders (self) :
+self.status = self.status + '; bad seek '
+break
+- class HTTPResponse (io.IOBase) :
++ class HTTPResponse :
+# strict: If true, raise BadStatusLine if the status line can ' t be
+# parsed as a valid HTTP/1.0 or 1.1 status line.By default it is
+def getreply (self) :
+try :
+response = self._conn.getresponse ()
+except BadStatusLine as e :
+- # # # hmm.if getresponse () ever closes the socket on a bad request,
+- # # # then we are going to have problems with self.sock
+-
+- # # # should we keep this behavior ? do people use it ?
+# keep the socket open (as a file), and return it
+self.file = self._conn.sock.makefile (' rb ', 0)
+def test () :
+status, reason, headers = h.getreply ()
+print (' status = ', status)
+print (' reason = ', reason)
+- print ("" read "", len (h.getfile ().read ()))
++ print (' read ', len (h.getfile ().read ()))
+print ()
+if headers :
+for header in headers.headers: print (header.strip ())",Fix HTTPResponse class definition and getreply method; update test function.,1,HTTPResponse 상속 제거와 테스트 출력 수정은 맞지만 getreply에서는 주석만 삭제되어 메서드 수정·fix 주장이 과장된다.
+H138,py,"--- a/IPython/core/shellapp.py
++++ b/IPython/core/shellapp.py
+def init_code (self) :
+self._run_exec_lines ()
+self._run_exec_files ()
+self._run_cmd_line_code ()
++
++ # Hide variables defined here from % who etc .
++ self.shell.user_ns_hidden.update (self.shell.user_ns)
+def _run_exec_lines (self) :
+"" "" "" Run lines of code in IPythonApp.exec_lines in the user ' s namespace."" "" ""","""Implemented IPython shellapp init_code method""",0,init_code는 이미 구현되어 있었고 이번 변경은 실행 후 namespace를 user_ns_hidden에 추가하는 한 줄이다.
+H139,py,"--- a/Lib/test/test_sysconfig.py
++++ b/Lib/test/test_sysconfig.py
+def test_platform_in_subprocess (self) :
+env = os.environ.copy ()
+env [' MACOSX_DEPLOYMENT_TARGET '] = ' 10.1 '
+- p = subprocess.Popen ([
+- sys.executable, ' - c ',
+- ' import sysconfig; print (sysconfig.get_platform ()) ',
+- ],
+- stdout = subprocess.PIPE,
+- stderr = open ('/dev/null '),
+- env = env)
+- test_platform = p.communicate () [0].strip ()
+- test_platform = test_platform.decode (' utf - 8 ')
+- status = p.wait ()
++ with open ('/dev/null ') as dev_null :
++ p = subprocess.Popen ([
++ sys.executable, ' - c ',
++ ' import sysconfig; print (sysconfig.get_platform ()) ',
++ ],
++ stdout = subprocess.PIPE,
++ stderr = dev_null,
++ env = env)
++ test_platform = p.communicate () [0].strip ()
++ test_platform = test_platform.decode (' utf - 8 ')
++ status = p.wait ()
+- self.assertEqual (status, 0)
+- self.assertEqual (my_platform, test_platform)
++ self.assertEqual (status, 0)
++ self.assertEqual (my_platform, test_platform)
+class MakefileTests (unittest.TestCase) :","""Update test_sysconfig.py for MACOSX_DEPLOYMENT_TARGET""",2,MACOSX_DEPLOYMENT_TARGET 관련 test_sysconfig 테스트에서 /dev/null 파일 관리를 context manager로 갱신한다.
+H143,rust,"--- a/types/src/contracts.rs
++++ b/types/src/contracts.rs
+@@ -512,15 +512,17 @@ impl ContractPackageHash {
+/// Parses a string formatted as per `Self::to_formatted_string()` into a
+/// `ContractPackageHash`.
+pub fn from_formatted_str(input: &str)->Result<Self, FromStrError> {
+- // let remainder = input
+- // .strip_prefix(PACKAGE_STRING_PREFIX)
+- // .ok_or(FromStrError::InvalidPrefix)?;
+- let remainder = match input.strip_prefix(PACKAGE_STRING_PREFIX) {
+- Some(remainder) => remainder,
+- None => input
+- .strip_prefix(PACKAGE_STRING_PREFIX_LEGACY)
+- .ok_or(FromStrError::InvalidPrefix)?,
++ let remainder: &str = {
++ if input.starts_with(PACKAGE_STRING_PREFIX_LEGACY) {
++ input.strip_prefix(PACKAGE_STRING_PREFIX_LEGACY)
++ } else if input.starts_with(PACKAGE_STRING_PREFIX) {
++ input.strip_prefix(PACKAGE_STRING_PREFIX)
++ } else {
++ return Err(FromStrError::InvalidPrefix);
++ }
++ .ok_or(FromStrError::InvalidPrefix)?
+};
++
+let bytes = HashAddr::try_from(checksummed_hex::decode(remainder)?.as_ref())?;
+Ok(ContractPackageHash(bytes))
+}
+@@ -1737,6 +1739,23 @@ mod tests {
+assert!(ContractHash::from_formatted_str(invalid_hex).is_err());
+}
++ #[test]
++ fn should_accept_legacy_and_new_package_prefix() {
++ let contract_hash = ContractPackageHash([3; 32]);
++ let legacy_encoded = PACKAGE_STRING_PREFIX_LEGACY.to_string() + &contract_hash.to_string();
++ let decoded_from_legacy = ContractPackageHash::from_formatted_str(&legacy_encoded)
++ .expect(""should accept legacy prefixed string"");
++
++ let encoded = contract_hash.to_formatted_string();
++ let decoded =
++ ContractPackageHash::from_formatted_str(&encoded).expect(""should accept new prefix"");
++
++ assert_eq!(
++ decoded_from_legacy, decoded,
++ ""decoded_from_legacy should equal decoded""
++ );
++ }
++
+#[test]
+fn contract_package_hash_from_str() {
+let contract_hash = ContractPackageHash([3; 32]);","changed from_formatted_str to accept legacy prefix, plus test",1,legacy/new prefix 테스트 추가는 맞지만 변경 전 구현도 이미 legacy prefix를 허용했으므로 새로 accept하게 했다는 주장은 부정확하다.
+H155,rust,"--- a/kimchi/src/circuits/polynomials/range_check/gate.rs
++++ b/kimchi/src/circuits/polynomials/range_check/gate.rs
+@@ -120,12 +120,6 @@ impl<F: FftField + SquareRootField> CircuitGate<F> {
+witness: &[Vec<F>; COLUMNS],
+cs: &ConstraintSystem<F>,
+)->Result<()> {
+- if self.typ == GateType::RangeCheck2 {
+- // Not yet implemented
+- // (Allow this to pass so that proof & verification test can function.)
+- return Ok(());
+- }
+-
+// TODO: We should refactor some of this code into a
+// new Expr helper that can just evaluate a single row
+// and perform a lot of the common setup below so that
+@@ -162,10 +156,12 @@ impl<F: FftField + SquareRootField> CircuitGate<F> {
+let witness_evals = cs.evaluate(&witness_poly, &z_poly);
+let mut index_evals = HashMap::new();
++ if self.typ != GateType::RangeCheck2 {
+index_evals.insert(
+self.typ,
+&cs.range_check_selector_polys[circuit_gate_selector_index(self.typ)].eval8,
+);
++ }
+// Set up lookup environment
+let lcs = cs
+@@ -208,13 +204,20 @@ impl<F: FftField + SquareRootField> CircuitGate<F> {
+// Setup powers of alpha
+let mut alphas = Alphas::<F>::default();
++ if self.typ != GateType::RangeCheck2 {
+alphas.register(
+ArgumentType::Gate(self.typ),
+circuit_gate_constraint_count::<F>(self.typ),
+);
++ }
+// Get constraints for this circuit gate
+- let constraints = circuit_gate_constraints(self.typ, &alphas);
++ // let constraints = circuit_gate_constraints(self.typ, &alphas);;
++ let constraints = if self.typ != GateType::RangeCheck2 {
++ circuit_gate_constraints(self.typ, &alphas)
++ } else {
++ E::zero()
++ };
+// Verify it against the environment
+if constraints
+@@ -1067,6 +1070,76 @@ mod tests {
+}
+}
++ #[test]
++ fn verify_range_check2_zero_valid_witness() {
++ let cs = create_test_constraint_system();
++ let witness: [Vec<PallasField>; COLUMNS] = array_init(|_| vec![PallasField::from(0); 4]);
++
++ // gates[3] is RangeCheck2
++ assert_eq!(cs.gates[3].verify_range_check(3, &witness, &cs), Ok(()));
++ }
++
++ #[test]
++ fn verify_range_check2_test_copy_constraints() {
++ let cs = create_test_constraint_system();
++
++ for row in 0..=1 {
++ for col in 5..=6 {
++ let mut witness: [Vec<PallasField>; COLUMNS] =
++ array_init(|_| vec![PallasField::from(1); 4]);
++
++ // Positive test case
++ // gates[3] is RangeCheck2
++ assert_eq!(cs.gates[3].verify_range_check(3, &witness, &cs), Ok(()));
++
++ // Negative test case
++ // Since RangeCheck2 only checks copy constraints and plookups,
++ // and since 1 is in the range, we must make something fail, so
++ // we break one of the copy constraints.
++ witness[col][row] = PallasField::zero();
++
++ // gates[3] is RangeCheck2
++ assert_eq!(
++ cs.gates[3].verify_range_check(3, &witness, &cs),
++ Err(GateError::InvalidCopyConstraint(GateType::RangeCheck2))
++ );
++ }
++ }
++ }
++
++ #[test]
++ fn verify_range_check2_test_lookups() {
++ let cs = create_test_constraint_system();
++
++ for row in 0..=1 {
++ for col in 5..=6 {
++ // Testing RangeCheck2 requires v0 and v1
++ let mut witness = range_check::create_witness::<PallasField>(
++ PallasField::from(2u64).pow([88]) - PallasField::one(), // in range
++ PallasField::from(2u64).pow([88]) - PallasField::one(), // in range
++ PallasField::zero(),
++ );
++
++ // Positive test
++ // gates[3] is RangeCheck2 and constrains part of v0 and v1
++ assert_eq!(cs.gates[3].verify_range_check(3, &witness, &cs), Ok(()));
++
++ // Negative test
++ // make plookup limb out of range and make sure copy constraint is valid
++ witness[col][row] = PallasField::from(2u64.pow(12));
++ witness[col - 5 + 2 * row + 1][3] = PallasField::from(2u64.pow(12));
++
++ // gates[3] is RangeCheck2 and constrains part of v0 and v1
++ assert_eq!(
++ cs.gates[3].verify_range_check(3, &witness, &cs),
++ Err(GateError::InvalidLookupConstraintSorted(
++ GateType::RangeCheck2
++ ))
++ );
++ }
++ }
++ }
++
+use crate::{prover_index::ProverIndex, verifier::verify};
+use commitment_dlog::commitment::CommitmentCurve;
+use groupmap::GroupMap;",Remove conditional check for RangeCheck2 gate implementation,2,RangeCheck2를 즉시 성공시키던 조건부 early return을 제거하고 copy/lookup 검증 테스트를 추가한다.

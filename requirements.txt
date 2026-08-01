@@ -1,0 +1,14 @@
+scipy
+openpyxl
+matplotlib
+# for scripts/score_reference_metrics_vs_gold.py (CPU, no GPU):
+sacrebleu
+rouge-score
+nltk
+# nltk data: python -c "import nltk; nltk.download('wordnet'); nltk.download('omw-1.4')"
+# for regenerating predictions (GPU):
+# vllm==0.15.0
+# transformers
+# rank-bm25
+# bert-score
+# bitsandbytes

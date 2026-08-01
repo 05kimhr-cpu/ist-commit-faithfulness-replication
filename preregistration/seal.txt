@@ -1,0 +1,19 @@
+# PRE-REGISTRATION SEAL — frozen BEFORE any human held-out label
+sealed_at: 2026-07-18T13:03:04Z (UTC)
+node: work01
+
+## SHA256 of frozen artifacts (prompt, judge predictions, sample, protocol, baselines)
+0ec8219ff7f1dd6077ce1c246efeec0b20b95939acec7910774dabeb31c0f1f5  19_judge_consequence.py
+52842da45c33af648ca2d10e6738b0099daa8dd432b3da7d5826a00498b20a35  HELDOUT_PROTOCOL.md
+aed18fcfc88be009f366fc1c4a128af479aa527c406b8cc683ee693fb99344b1  heldout_items.jsonl
+b6690bc2b11de28c332ee6706d4db4c9550e64b8429efb0470d19ae3ef3efd20  heldout_key.csv
+28ac281f2f7470daa18091c14447ada60c9e3ddca7f1ac977c2fc554df9df364  heldout_judge.jsonl
+712b476cf4f13b759fb6008d072072ddebbe73c048460e54e7aef3fb2c0d8287  heldout_judge_14b.jsonl
+e24ef73257acf731886300c564d2f3a73ce1addf8f7815eed717a19d64e7df9b  heldout_metrics.jsonl
+bc978b49dfc6375a461678a2216613f258292169e5e2770ada61618140a7ef2a  heldout_codeaware/codeaware_scores.jsonl
+
+## commitment
+- consequence judge prompt/model/decoding = FROZEN (no re-tuning on held-out).
+- held-out judge predictions computed above BEFORE human labels exist.
+- analysis plan + success criterion (held-out tau CI lower bound > 0.30 AND > code-aware ~0.18) = fixed in HELDOUT_PROTOCOL.md.
+- publish either way (positive/partial/negative reported honestly).

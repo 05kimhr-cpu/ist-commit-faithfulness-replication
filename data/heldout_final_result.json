@@ -1,0 +1,13 @@
+{
+  "headline_tau": 0.599,
+  "ci": [
+    0.474,
+    0.711
+  ],
+  "ceiling": 0.719,
+  "judge14": 0.407,
+  "code_aware": 0.129,
+  "n": 160,
+  "success": true,
+  "irr_kappa_note": "weighted kappa 0.738 (from 35_)"
+}

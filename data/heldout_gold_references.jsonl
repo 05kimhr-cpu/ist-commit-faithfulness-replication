@@ -1,0 +1,160 @@
+{"item_id": "H001", "source": "gold", "gold_reference": "Don ' t pin for other by default ."}
+{"item_id": "H002", "source": "gold", "gold_reference": "[ airplay ] - handle empty session ids from itunes"}
+{"item_id": "H003", "source": "gold", "gold_reference": "Don ' t attempt to become a cluster controller on any process with a class that has NeverAssign fitness ."}
+{"item_id": "H004", "source": "gold", "gold_reference": "[ windows ] Use unprefixed library name for immediate mode ."}
+{"item_id": "H005", "source": "gold", "gold_reference": "- Throw error if setter and getter reference their member variable with self . , fixes"}
+{"item_id": "H006", "source": "codellama", "gold_reference": "Make the order of specializing functions deterministic ."}
+{"item_id": "H007", "source": "codellama", "gold_reference": "set horizontal scrollmode of result widgets to per pixel"}
+{"item_id": "H008", "source": "codellama", "gold_reference": "Merge remote - tracking branch ' origin / master ' into master - next"}
+{"item_id": "H009", "source": "codellama", "gold_reference": "Small clean - up in box - to - stack prmomotion ."}
+{"item_id": "H010", "source": "codellama", "gold_reference": "Give an error when rescan is aborted by the user"}
+{"item_id": "H011", "source": "qwen", "gold_reference": "fixed compiler warning , signed / unsigned comparision"}
+{"item_id": "H012", "source": "qwen", "gold_reference": "teach AllocBoxToStack to remove alloc_stack ' s that are artificial ( or inlined )"}
+{"item_id": "H013", "source": "qwen", "gold_reference": "! B ( CE - 10899 ) ( AISystem ) Sequence nodes : changed the way how nodes react on invalid sequence IDs to prevent consequential errors from preceding errors ( Approved by samuelk )"}
+{"item_id": "H014", "source": "qwen", "gold_reference": "Skip auto - complete of XML processing instructions"}
+{"item_id": "H015", "source": "qwen", "gold_reference": "[ driver ] Adjusted the implementation of Driver : : getOutputMode ( ) so that it uses Option : : matches ( ) instead of a series of ArgList : : getLastArg ( ) calls ."}
+{"item_id": "H016", "source": "deepseek", "gold_reference": "Enforced DecisionFunction vector indexes to be saved on SVM save / load methods"}
+{"item_id": "H017", "source": "deepseek", "gold_reference": "Shorten the implementation of 3D swizzle to only 3 functions"}
+{"item_id": "H018", "source": "deepseek", "gold_reference": "In archive allow scroll - down - by - pinned - drag ."}
+{"item_id": "H019", "source": "deepseek", "gold_reference": "[ chd ] use c routines for yuy2 to yv12 convert under win platform"}
+{"item_id": "H020", "source": "deepseek", "gold_reference": "valuetest : add tests for rvalue references , reenable erase / remove pattern"}
+{"item_id": "H021", "source": "gold", "gold_reference": "fixed indexer name compression to be case in - sensitive ."}
+{"item_id": "H022", "source": "gold", "gold_reference": "Add InputTarget to capture input from columns before hit objects ."}
+{"item_id": "H023", "source": "gold", "gold_reference": "Added setters to RadioButtonGroup GroupName and SelectedValue ( ) fixes"}
+{"item_id": "H024", "source": "gold", "gold_reference": "Avoid IForegroundNotificationService interaction from tests that can ' t use it"}
+{"item_id": "H025", "source": "gold", "gold_reference": "Update Emby . Server . Implementations / Networking / NetworkManager . cs"}
+{"item_id": "H026", "source": "codellama", "gold_reference": "Prevented using named semaphore in test , because Travis doesn ' t support it"}
+{"item_id": "H027", "source": "codellama", "gold_reference": "Change Pulse to return a bool to indicate whether Pulse was successful"}
+{"item_id": "H028", "source": "codellama", "gold_reference": "Break out logic for each type of import addition"}
+{"item_id": "H029", "source": "codellama", "gold_reference": "Don ' t use ProfileShowMoreButton in the test scene to avoid confusion"}
+{"item_id": "H030", "source": "codellama", "gold_reference": "Call GetDynamicBuffer with lambdas instead of implicit delegates to reduce GC noise ."}
+{"item_id": "H031", "source": "qwen", "gold_reference": "Further changes on 404 error processing ( ignore static resources )"}
+{"item_id": "H032", "source": "qwen", "gold_reference": "fixed : Use name pattern in url download & upload"}
+{"item_id": "H033", "source": "qwen", "gold_reference": "Improved screen tearing test speed and added mouse wheel animation speed control"}
+{"item_id": "H034", "source": "qwen", "gold_reference": "Use a TaskCompletionSource in non - generic ContinueWhenAny case . Fix ."}
+{"item_id": "H035", "source": "qwen", "gold_reference": "Add return to main query window from context menu after selection"}
+{"item_id": "H036", "source": "deepseek", "gold_reference": "Added virtual methods for overriding getting methods and getting the class name"}
+{"item_id": "H037", "source": "deepseek", "gold_reference": "Abort SwitchAnalysis on duplicate condition ( redundant code )"}
+{"item_id": "H038", "source": "deepseek", "gold_reference": "Print full grain class name in silo init loading ."}
+{"item_id": "H039", "source": "deepseek", "gold_reference": "[ ui ] update [ log ] on local commits"}
+{"item_id": "H040", "source": "deepseek", "gold_reference": "Reverting to original iOS video player as it was not used anymore"}
+{"item_id": "H041", "source": "gold", "gold_reference": "Fixed missing reading of the static workers defined in terraform"}
+{"item_id": "H042", "source": "gold", "gold_reference": "VULTR: Adopt diff2 in compatibility mode and fix handling of some integrations tests"}
+{"item_id": "H043", "source": "gold", "gold_reference": "daemon: Remove dummy OnceFrom Test\nNow that the daemon tries to talk to the systemd journal, this unit\ntest hangs in my dev environment.  We can't really support this\nwithout mocking a lot more, and it's not really covering much\ninteresting right now.  Delete it."}
+{"item_id": "H044", "source": "gold", "gold_reference": "Avoid unnecessary readlink.\nCalling readlink would be stuck if nfs is used and its connection is\nbroken.\nThis commit defers readlink after the device check to resolve such\nissue.\nFixes"}
+{"item_id": "H045", "source": "gold", "gold_reference": "controller: Start sub-controllers in order of dependency\nThe render controller needs kubelet data, so start it first.\nAnd add a bit of docs."}
+{"item_id": "H046", "source": "codellama", "gold_reference": "Fix leak of tokens in processlist monitor on Windows\n* Fix leak of tokens in processlist monitor on Windows\nThe defer call of token.Close() can only be made after the value of the\ntoken is set, otherwise, it \"closes\" an invalid handle.\n* Ignore error returned by windows.CloseHandle()"}
+{"item_id": "H047", "source": "codellama", "gold_reference": "Startup log lines start with captial letters\n**What**\nuse capital letters during the server startup log lines. This will\nkeep the logs consistent"}
+{"item_id": "H048", "source": "codellama", "gold_reference": "Wait, or timeout, for LeaderID to be set\nAddress\nfailures."}
+{"item_id": "H049", "source": "codellama", "gold_reference": "Fix data races in collectd plugin\nMultiple gothreads were reading/writing to `state` which was causing data\nraces."}
+{"item_id": "H050", "source": "codellama", "gold_reference": "Update external cloud provider FG unittests\nFix external cloud provider GCP unittests, add vSphere related ones.\nReorder tests a bit."}
+{"item_id": "H051", "source": "qwen", "gold_reference": "Add total Raft directory size to Store stats"}
+{"item_id": "H052", "source": "qwen", "gold_reference": "Update unit test since mergo 0.3.7 changed slice merge order (https://github.com/imdario/mergo/pull/102)"}
+{"item_id": "H053", "source": "qwen", "gold_reference": "mw/kubernetes: restore handler to pre-autopath state\nPull in the contents of routeRequest as it is only called once."}
+{"item_id": "H054", "source": "qwen", "gold_reference": "Permissions fix for etcd restore with custom uid/gid"}
+{"item_id": "H055", "source": "qwen", "gold_reference": "Fix error formatting (missing a call to Sprintf)\nJust a minor thing I noticed while skimming over the code..."}
+{"item_id": "H056", "source": "deepseek", "gold_reference": "daemon: strengthen user/group handling\nWe were previously dereferencing `f.User` without checking if it was\n`nil` first. Just lift `ResolveNodeUidAndGid()` from Ignition (and make\na note that we should dedupe stuff down the line)."}
+{"item_id": "H057", "source": "deepseek", "gold_reference": "Fix init help message.\nDocker App doesn't take a docker-compose file implicitly any more."}
+{"item_id": "H058", "source": "deepseek", "gold_reference": "daemon: fix deletion of stale config files\nMinor regression from We weren't passing the right variable to\n`RemoveAll()`.\nCloses:"}
+{"item_id": "H059", "source": "deepseek", "gold_reference": "fix: ResizeLV does not check thinpool size\nThe ResizeLV function did not use the available overprovisioned\ncapacity in the size checks for thin-provisioned devices. This caused\nresizing a thin LV to fail when the VG did not have sufficient\nspace but the overprovisioned capacity did."}
+{"item_id": "H060", "source": "deepseek", "gold_reference": "Provide IP for kube-proxy if cloudprovider is set\nIf cloudprovider is set (not empty), set the bind address because the node will not be able to retrieve it's IP address because the nodename could be set by the cloud provider (e.g. AWS and Openstack)"}
+{"item_id": "H061", "source": "gold", "gold_reference": "Allow other \" timestamp \" types in MVC error model"}
+{"item_id": "H062", "source": "gold", "gold_reference": "Defend against TypeNotPresentException in reflection data builder ."}
+{"item_id": "H063", "source": "gold", "gold_reference": "Index Update Settings API does not update settings in real time , closes ."}
+{"item_id": "H064", "source": "gold", "gold_reference": "Deleting declaration of exceptions that can never be thrown ( they are wrapped to WebDriverException )"}
+{"item_id": "H065", "source": "gold", "gold_reference": "[ grid ] Add a command to run the message bus as a standalone component"}
+{"item_id": "H066", "source": "codellama", "gold_reference": "TraceRA : fix block printing for trace interval dumps ."}
+{"item_id": "H067", "source": "codellama", "gold_reference": "[ fixed ] updated check in FastImage . Bollocks ."}
+{"item_id": "H068", "source": "codellama", "gold_reference": "Indices resolution : don ' t go over the indices for requests that don ' t contain wildcards , just return them as they are"}
+{"item_id": "H069", "source": "codellama", "gold_reference": "Add a replace ( . . ) method to FrameDecoder and also to ReplayDecoder as it now extend FrameDecoder . This also fix"}
+{"item_id": "H070", "source": "codellama", "gold_reference": "Keeping StringBuffer in a field makes the code simpler and more thread safe"}
+{"item_id": "H071", "source": "qwen", "gold_reference": "SimonStewart : Clean up imports . No logical changes here either ."}
+{"item_id": "H072", "source": "qwen", "gold_reference": "Use presized ImmutableList . Builder in ImmutableSortedMap creation ."}
+{"item_id": "H073", "source": "qwen", "gold_reference": "SimonStewart : Go , go , Gadget JUnit4 . Converting the ProxyHanderUnitTest to use junit4"}
+{"item_id": "H074", "source": "qwen", "gold_reference": "Entity editor form render fix ( default control width )"}
+{"item_id": "H075", "source": "qwen", "gold_reference": "sulong : resolveRenamedSymbols should print ExternalLibrary on failure"}
+{"item_id": "H076", "source": "deepseek", "gold_reference": "[ ] Move ImmediateEventExecutor to common and let it access via a static public field"}
+{"item_id": "H077", "source": "deepseek", "gold_reference": "Improving representation of session info in server logs"}
+{"item_id": "H078", "source": "deepseek", "gold_reference": "Drop first flag that ' s no longer used"}
+{"item_id": "H079", "source": "deepseek", "gold_reference": "Deprecating Source . appendCode and all remaining Source . fromXYZ factory methods"}
+{"item_id": "H080", "source": "deepseek", "gold_reference": "Return ArrayIterable type so reset ( ) can be accessed ."}
+{"item_id": "H081", "source": "gold", "gold_reference": "Restored ability to override populated array caster from 4 . 6 . 2"}
+{"item_id": "H082", "source": "gold", "gold_reference": "Use null for sourcesContent [ i ] if sources [ i ] unrecognized ."}
+{"item_id": "H083", "source": "gold", "gold_reference": "Added zoomInvert option to reverse the order in which zooms are numbered ."}
+{"item_id": "H084", "source": "gold", "gold_reference": "Avoid shape mutation by adding ref properties to Component in the constructor"}
+{"item_id": "H085", "source": "gold", "gold_reference": "RenderTexture . destroy has been renamed to ` preDestroy ` to take advantage of the preDestroy callback system ."}
+{"item_id": "H086", "source": "codellama", "gold_reference": "` Loader . MultiFile ` will now parse the given files array and only add valid entries into the file list , allowing multifiles to now have optional file entries ."}
+{"item_id": "H087", "source": "codellama", "gold_reference": "Group . add has a new optional argument ` index ` which controls the index within the group to insert the child to . Where 0 is the bottom of the Group ."}
+{"item_id": "H088", "source": "codellama", "gold_reference": "[ javascript mode ] Improve support for syntactic corner cases in TypeScript"}
+{"item_id": "H089", "source": "codellama", "gold_reference": "Only provide hints for JavaScript files ( and not JavaScript within HTML files ) , and cleanup stale session objects when switching to non - hintable files ."}
+{"item_id": "H090", "source": "codellama", "gold_reference": "Fix on - demand no - cosmetic - filtering badge when generichide in use"}
+{"item_id": "H091", "source": "qwen", "gold_reference": "ProcessQueue now extends Event Emitter . Also added removeAll method and length getter ."}
+{"item_id": "H092", "source": "qwen", "gold_reference": "Set progress to duration instead of 0 when reversed"}
+{"item_id": "H093", "source": "qwen", "gold_reference": "Improve helpfulness of error message when combining different files"}
+{"item_id": "H094", "source": "qwen", "gold_reference": "Log renderApplication_React_render timespan to scoped performance logger if available"}
+{"item_id": "H095", "source": "qwen", "gold_reference": "use @ wycats amd micro - loader , which supports relative paths"}
+{"item_id": "H096", "source": "deepseek", "gold_reference": "Change ' lift failed ' message suffix to only log in ' silly ' mode , to avoid confusion"}
+{"item_id": "H097", "source": "deepseek", "gold_reference": "Add Mac specific key binding for expand and collapse all"}
+{"item_id": "H098", "source": "deepseek", "gold_reference": "Be more accurate about which handlers to fire change events for"}
+{"item_id": "H099", "source": "deepseek", "gold_reference": "Use Babel options appropriate for Node 8 to compile server code ."}
+{"item_id": "H100", "source": "deepseek", "gold_reference": "Flow type improvements to accept co - variant types"}
+{"item_id": "H101", "source": "gold", "gold_reference": "Add support for array data source.\nRemove unused import."}
+{"item_id": "H102", "source": "gold", "gold_reference": "Used find method to get entity by ID"}
+{"item_id": "H103", "source": "gold", "gold_reference": "Use bindValues from base Connection.\nFix in relation to"}
+{"item_id": "H104", "source": "gold", "gold_reference": "Jellyfin API Update\nAlso includes trailing slash fix from"}
+{"item_id": "H105", "source": "gold", "gold_reference": "[HttpClient] Fixed NO_PROXY option ignored in NativeHttpClient::request() method"}
+{"item_id": "H106", "source": "codellama", "gold_reference": "Catch possible ImagickException and handle default profile name in exception"}
+{"item_id": "H107", "source": "codellama", "gold_reference": "added sahibinden check icon and show features for web view && fixed get categories"}
+{"item_id": "H108", "source": "codellama", "gold_reference": "Cleaner & Additional Test for direct event calls"}
+{"item_id": "H109", "source": "codellama", "gold_reference": "Re-introduced a reset mechanism to make sure that when package is installed, all patches are re-applied"}
+{"item_id": "H110", "source": "codellama", "gold_reference": "Make payment \"show\" action redirect to invoice instead of enrollment"}
+{"item_id": "H111", "source": "qwen", "gold_reference": "better error management for courses with no events"}
+{"item_id": "H112", "source": "qwen", "gold_reference": "Report mismatches between trans-unit id and source text via status script"}
+{"item_id": "H113", "source": "qwen", "gold_reference": "set 'content:encoded' as an alias of 'description'. Fix"}
+{"item_id": "H114", "source": "qwen", "gold_reference": "Moved complex array shape docblock to the class definition, to avoid PHPCS crashing on it"}
+{"item_id": "H115", "source": "qwen", "gold_reference": "Implement default access token algorithm as an access token generator"}
+{"item_id": "H116", "source": "deepseek", "gold_reference": "Remove dependency of checkDirty to compile with contract"}
+{"item_id": "H117", "source": "deepseek", "gold_reference": "use array table console output instead of dump"}
+{"item_id": "H118", "source": "deepseek", "gold_reference": "Apply default attendance when moving a student from a course to another"}
+{"item_id": "H119", "source": "deepseek", "gold_reference": "Exception on affected record !=1.\nadditional exception; avoid using Type::BOOLEAN."}
+{"item_id": "H120", "source": "deepseek", "gold_reference": "Removing call to setEncryptionKey as no such function on the authorization server"}
+{"item_id": "H121", "source": "gold", "gold_reference": "billing : Use common pathway for upgrading in tests ."}
+{"item_id": "H122", "source": "gold", "gold_reference": "Change logging to always log on DEBUG to file"}
+{"item_id": "H123", "source": "gold", "gold_reference": "add util method for Leave One Out crossvalidation"}
+{"item_id": "H124", "source": "gold", "gold_reference": "Add a function to get the content of the xml version of manifest to deal with VS ."}
+{"item_id": "H125", "source": "gold", "gold_reference": "In add_callback , hold the lock while writing to the waker pipe ."}
+{"item_id": "H126", "source": "codellama", "gold_reference": "Using different corner to avoid off - by - one issue ."}
+{"item_id": "H127", "source": "codellama", "gold_reference": "Add separate parameter description to filled , filled_like and ones"}
+{"item_id": "H128", "source": "codellama", "gold_reference": "Added python3 symlink ; removed Distribute - related code , docs and comments ; changed Mac OS X computation to determine framework builds ."}
+{"item_id": "H129", "source": "codellama", "gold_reference": "Restore TestSkipped exception ; appears to have disappeared in last checkin ."}
+{"item_id": "H130", "source": "codellama", "gold_reference": "MAINT : Use more specific signature in decorator ."}
+{"item_id": "H131", "source": "qwen", "gold_reference": "Add commands to change user password and grant admin"}
+{"item_id": "H132", "source": "qwen", "gold_reference": "Fixed wrong path for UpDownTradeSource . Added docs ."}
+{"item_id": "H133", "source": "qwen", "gold_reference": "Push debug files into a subdirectory to keep things cleaner ."}
+{"item_id": "H134", "source": "qwen", "gold_reference": "Add num_cpus ( ) functions to detect total number of CPUs active ."}
+{"item_id": "H135", "source": "qwen", "gold_reference": "HTTPResponse should not inherit from io . IOBase ."}
+{"item_id": "H136", "source": "deepseek", "gold_reference": "Update Ansible release version to 2 . 6 . 0dev0 ."}
+{"item_id": "H137", "source": "deepseek", "gold_reference": "Add module cpm_user to read , create , edit and delete users on WTI devices ( )"}
+{"item_id": "H138", "source": "deepseek", "gold_reference": "Do not expose variables defined at startup to % who etc ."}
+{"item_id": "H139", "source": "deepseek", "gold_reference": "Explicitly close a file to stop raising a ResourceWarning ."}
+{"item_id": "H140", "source": "deepseek", "gold_reference": "Add oldtypecodes to oldnumeric . typeconv so that old Numeric character codes can be identified ."}
+{"item_id": "H141", "source": "gold", "gold_reference": "Implement `Default` for `WorkQueue` in a matter that does not require `T: Default`"}
+{"item_id": "H142", "source": "gold", "gold_reference": "Provide default method to initialize node_ids in NetworkedReactor based\non memory address"}
+{"item_id": "H143", "source": "gold", "gold_reference": "changed from_formatted_str to accept legacy prefix, plus test"}
+{"item_id": "H144", "source": "gold", "gold_reference": "release the block builder latch even if the data was already registered"}
+{"item_id": "H145", "source": "gold", "gold_reference": "Try the next peer when the fatch fails."}
+{"item_id": "H146", "source": "codellama", "gold_reference": "Disable slashing.\nFor the first 90 days we only evict equivocating validators instead of\nslashing them."}
+{"item_id": "H147", "source": "codellama", "gold_reference": "Change function signature.\nThis function does not need to return a remaining balance as the balance\nis unchanged during the operation."}
+{"item_id": "H148", "source": "codellama", "gold_reference": "Log in more detail if we are not voting in an era."}
+{"item_id": "H149", "source": "codellama", "gold_reference": "NO-TICK: Add capability of turning `Block` into `FinalizedBlock`.\nThis is necessary for node syncing/joining catch-up mechanism. We want to download `Block`(s) (linear chain blocks) and execute them."}
+{"item_id": "H150", "source": "codellama", "gold_reference": "Use `stack_store` instead of `stack_addr`+`store` when building structs"}
+{"item_id": "H151", "source": "qwen", "gold_reference": "Add a log message when purging the synchronizer queues."}
+{"item_id": "H152", "source": "qwen", "gold_reference": "[cli] Enhancement cli, execute quit action when CTRL-C and CTRL-D, fix console version command."}
+{"item_id": "H153", "source": "qwen", "gold_reference": "implement wallet's function to retrieve the path of an address"}
+{"item_id": "H154", "source": "qwen", "gold_reference": "Enable stack probing on x86_64\nCranelift now supports inline stack probes on x86_64"}
+{"item_id": "H155", "source": "qwen", "gold_reference": "Add RangeCheck2 circuit gate unit tests\nNote: Adding coverage to confirm correctness before\nand after removing this gate"}
+{"item_id": "H156", "source": "deepseek", "gold_reference": "only write new Merke roots when non-empty set of deploys present"}
+{"item_id": "H157", "source": "deepseek", "gold_reference": "Provide a better description of \"Requests\" in `effects` docs."}
+{"item_id": "H158", "source": "deepseek", "gold_reference": "Don't write clif ir by default when debug assertions are enabled"}
+{"item_id": "H159", "source": "deepseek", "gold_reference": "Don't panic when the target is not supported by Cranelift"}
+{"item_id": "H160", "source": "deepseek", "gold_reference": "Support self-signed values and improve fingerprint support in TLS module"}
