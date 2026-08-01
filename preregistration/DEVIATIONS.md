@@ -29,3 +29,16 @@ seal. That branch is not used by the primary (Qwen) judge, and the primary judge
 predictions (`judge_32b.jsonl`) still match their sealed hash. The original frozen
 script was not under version control and is not byte-recoverable; the sealed hash is
 kept as the historical record.
+
+A second sealed artifact, the baseline score file `reference_metrics.jsonl` (sealed as
+`heldout_metrics.jsonl`), also no longer matches its sealed hash. After labeling we found that BM25
+had been fitted per item rather than over the corpus, which degenerates its IDF term, and we
+recomputed that one score at the corpus level. The correction changes the `bm25` field only: all
+other fields in the file (BLEU-4, ROUGE-L, CHRF++, METEOR, BERTScore, and the raw NLI score) are
+byte-identical to the sealed version, and the three prediction files that carry the confirmatory
+result (`judge_32b.jsonl`, `judge_14b.jsonl`, `code_nli.jsonl`) still verify against their sealed
+hashes. BM25's held-out Kendall tau_b moves from -0.015 to +0.027, that is, from near zero to near
+zero; it was not the strongest baseline before or after the correction, and the pre-specified
+success criterion, which is defined against the code-adapted NLI baseline, is unaffected. We report
+the corrected value because it is the correct one, and record the divergence here because the
+sealed hash no longer verifies.
