@@ -152,3 +152,12 @@ conf = [[0] * 3 for _ in range(3)]
 for a, b in zip(h, jj): conf[a][b] += 1
 print("Confusion (rows = human 0/1/2, cols = judge 0/1/2):")
 for lab, row in enumerate(conf): print(f"  human={lab}: {row}")
+
+# ---- bootstrap CIs for the six overlap baselines (reseeded so each is order-independent) ----
+print("\nOverlap baselines, held-out tau with 95% bootstrap CI:")
+for name, field in [("BLEU-4", "bleu4"), ("ROUGE-L", "rouge_l"), ("CHRF++", "chrf"),
+                    ("METEOR", "meteor"), ("BM25", "bm25"), ("BERTScore", "bertscore")]:
+    random.seed(20260720)
+    g = (lambda f: (lambda i: met[i][f]))(field)
+    lo_b, hi_b = boot(g)
+    print(f"  {name:10} {tau(g):+.3f}  [{lo_b:+.3f}, {hi_b:+.3f}]")
