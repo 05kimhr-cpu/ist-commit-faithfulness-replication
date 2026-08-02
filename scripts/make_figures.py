@@ -2,7 +2,7 @@
 """
 Regenerate the metric-vs-human figure from the released human labels and model predictions.
 Run from the package root:  python scripts/make_figures.py
-Writes figures/metric_vs_human.pdf. No GPU required.
+Writes figures/fig1_metric_vs_human_heldout.pdf. No GPU required.
 """
 import json, os, csv, collections
 import matplotlib; matplotlib.use("Agg")
@@ -36,21 +36,21 @@ judge = {k: v["judge_corr"] for k, v in jl(f"{D}/predictions/judge_32b.jsonl").i
 def tau(g):
     xs = [g(i) for i in ids if g(i) is not None]; ys = [cons[i] for i in ids if g(i) is not None]
     return kendalltau(xs, ys).correlation
-ceil = kendalltau([A[i] for i in ids], [B[i] for i in ids]).correlation
+human_ref = kendalltau([A[i] for i in ids], [B[i] for i in ids]).correlation
 
 rows = [("BLEU-4", tau(lambda i: met[i]["bleu4"])), ("ROUGE-L", tau(lambda i: met[i]["rouge_l"])),
         ("CHRF++", tau(lambda i: met[i]["chrf"])), ("METEOR", tau(lambda i: met[i]["meteor"])),
         ("BM25", tau(lambda i: met[i]["bm25"])), ("BERTScore", tau(lambda i: met[i]["bertscore"])),
-        ("raw NLI", tau(lambda i: met[i]["dgf"])), ("code-adapted NLI", tau(lambda i: code_nli.get(i))),
+        ("raw BART-MNLI", tau(lambda i: met[i]["dgf"])), ("code-adapted Llama NLI", tau(lambda i: code_nli.get(i))),
         ("LLM judge", tau(lambda i: judge.get(i)))]
 rows.sort(key=lambda r: r[1]); labels = [r[0] for r in rows]; vals = [r[1] for r in rows]
 colors = [C["blue"] if "judge" in l else (C["verm"] if v < 0 else C["gray"]) for l, v in zip(labels, vals)]
 fig, ax = plt.subplots(figsize=(7, 4.2)); y = range(len(rows))
 ax.barh(list(y), vals, color=colors, height=0.62, zorder=3); ax.axvline(0, color=C["black"], lw=0.8)
-ax.axvline(ceil, color=C["green"], lw=1.6, ls="--"); ax.text(ceil - 0.018, len(rows) / 2.0 - 0.5, f"inter-rater ceiling {ceil:.2f}", color=C["green"], rotation=90, va="center", ha="center", fontsize=8.5)
+ax.axvline(human_ref, color=C["green"], lw=1.6, ls="--"); ax.text(human_ref - 0.018, len(rows) / 2.0 - 0.5, f"human-human agreement reference {human_ref:.2f}", color=C["green"], rotation=90, va="center", ha="center", fontsize=8.5)
 ax.set_yticks(list(y)); ax.set_yticklabels(labels)
 for i, v in enumerate(vals): ax.text(v + (0.012 if v >= 0 else -0.012), i, f"{v:+.2f}", va="center", ha="left" if v >= 0 else "right", fontsize=9)
-ax.set_xlim(-0.2, 0.80); ax.set_xlabel("Kendall tau vs human faithfulness (held-out, n=160)")
-ax.set_title("Automatic metrics do not track human faithfulness; a code-LLM judge does", fontsize=11)
+ax.set_xlim(-0.2, 0.80); ax.set_xlabel("Kendall $\\tau_b$ vs human faithfulness (held-out, n=160)")
+ax.set_title("Agreement with human diff-grounded faithfulness labels (held-out)", fontsize=11)
 os.makedirs(FIG, exist_ok=True)
-fig.savefig(os.path.join(FIG, "metric_vs_human.pdf")); print("wrote figures/metric_vs_human.pdf")
+fig.savefig(os.path.join(FIG, "fig1_metric_vs_human_heldout.pdf")); print("wrote figures/fig1_metric_vs_human_heldout.pdf")

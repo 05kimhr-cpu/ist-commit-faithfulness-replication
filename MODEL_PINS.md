@@ -13,8 +13,8 @@ snapshot still exists, the SHA-256 of its `config.json` as a provenance check.
 |---|---|---|---|---|
 | judge 32B (headline) | Qwen2.5-Coder-32B-Instruct-AWQ | qwen2 | AWQ 4-bit | `bd070b51e60a` |
 | judge 14B (robustness) | Qwen2.5-Coder-14B-Instruct-AWQ | qwen2 | AWQ 4-bit | `af62852325fc` |
-| code-adapted NLI | Llama-3.1-8B-Instruct | llama | bitsandbytes 4-bit | `29e4c210b0d6` |
-| raw NLI | facebook/bart-large-mnli | bart | none | `a0f9bcb245b6` |
+| code-adapted Llama NLI | Llama-3.1-8B-Instruct | llama | bitsandbytes 4-bit | `29e4c210b0d6` |
+| raw BART-MNLI | facebook/bart-large-mnli | bart | none | `a0f9bcb245b6` |
 | BERTScore backbone | roberta-large | roberta | none | `82ba49810e64` |
 
 All five were loaded from `/cephfs/lab/models/`. The generic-prompt ablation
@@ -39,7 +39,7 @@ Codestral-22B-AWQ and QwQ-32B-AWQ were loaded from
 
 The development set has 120 labeled items, of which 40 are natural (diff, message)
 pairs and 80 are polarity-controlled constructions. The sweep scored all 120; Figure 3
-reports Kendall tau on the 40 natural items only, matching the in-sample column of
+reports Kendall tau-b on the 40 natural items only, matching the in-sample column of
 Table 1. DeepSeek-Coder-V2-Lite is the model marked with a dagger in the Figure 3
 caption as scored with the generic prompt; the log above is the record of that.
 
@@ -66,7 +66,7 @@ treats cross-family generalization as not yet established.
 ## Environment
 
 - vLLM 0.15.0 (the analysis environment), transformers, bitsandbytes 0.49.2 (used for
-  the code-adapted NLI).
+  the code-adapted Llama NLI).
 - Judge decoding: temperature 0, max_tokens 450, single sample (frozen).
 - Execution: a single RTX 4090, `enforce_eager` for the 32B AWQ judge.
 - Seeds: the sampling and bootstrap seeds are fixed inside the scripts.

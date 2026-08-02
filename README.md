@@ -1,7 +1,7 @@
 # Replication Package
 
-This package accompanies the paper *Can a Language Model Judge Commit-Message Faithfulness? A
-Measurement-Validity Study of Automatic Evaluation*. It contains the human labels, the frozen model
+This package accompanies the paper *Measurement Validity of Automatic Commit-Message Evaluation for
+Diff-Grounded Faithfulness: A Prospective Held-Out Study*. It contains the human labels, the frozen model
 predictions, the analysis code, the hash-seal record, and the figures, so that the reported
 results can be verified and regenerated.
 
@@ -14,11 +14,11 @@ pip install -r requirements.txt
 python scripts/analyze.py
 ```
 
-This recomputes the held-out correlations, confidence intervals, inter-rater reliability, the
+This recomputes the held-out correlations, confidence intervals, human-human agreement statistics, the
 judge-vs-baseline comparison, and the prompt ablation reported in the paper.
 
-The overlap metrics in `scripts/analyze.py` are scored against the diff (the object of faithfulness).
-The paper also reports the metrics in their standard form, scored against the developer's reference
+The text-similarity baseline values analyzed by `scripts/analyze.py` were computed against the diff (the object of faithfulness).
+The paper also reports these baselines in their standard form, scored against the developer's reference
 message, on the generated candidates (RQ1). That check is reproduced by:
 
 ```
@@ -26,7 +26,7 @@ python scripts/score_reference_metrics_vs_gold.py
 ```
 
 which uses `data/heldout_gold_references.jsonl` as the reference and confirms these metrics are also
-weak (ROUGE-L Kendall tau = 0.18, the strongest of them; all far below the judge).
+weak (ROUGE-L Kendall tau-b = 0.18, the strongest of them; all far below the judge).
 
 ## Contents
 
@@ -45,9 +45,9 @@ data/
     judge_14b.jsonl              LLM judge (14B), robustness
     judge_generic_prompt.jsonl   judge with a generic prompt (ablation, post hoc)
     judge_codestral.jsonl        cross-family judge (Codestral-22B, post hoc)
-    reference_metrics.jsonl      BLEU/ROUGE/CHRF++/METEOR/BM25/BERTScore/raw NLI, held-out
+    reference_metrics.jsonl      BLEU/ROUGE/CHRF++/METEOR/BM25/BERTScore/raw BART-MNLI, held-out
     dev_reference_metrics.jsonl  the same metrics on the development set
-    code_nli.jsonl               code-adapted NLI score, held-out
+    code_nli.jsonl               code-adapted Llama NLI score, held-out
 preregistration/
   protocol.md                    the protocol fixed before labeling (Korean, the sealed original)
   protocol_en.md                 English translation of the above, added after the study

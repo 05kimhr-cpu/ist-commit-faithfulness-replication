@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Compute the automatic baseline scores for each (diff, message) pair, with the message as candidate
-and the diff as reference: BLEU-4, ROUGE-L, CHRF++, METEOR, BM25, BERTScore, and a raw NLI signed
-score (entailment minus contradiction). Requires a GPU for BERTScore and the NLI model.
+and the diff as reference: BLEU-4, ROUGE-L, CHRF++, METEOR, BM25, BERTScore, and a raw signed
+BART-MNLI score (entailment minus contradiction). Requires a GPU for BERTScore and the NLI model.
 Usage: ITEMS_FILE=heldout_items.jsonl OUT=heldout_metrics.jsonl python score_reference_metrics.py
 """
 import json, os

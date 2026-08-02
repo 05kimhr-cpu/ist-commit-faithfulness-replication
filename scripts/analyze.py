@@ -65,7 +65,7 @@ def boot(getter, R=5000):
 
 n = len(ids)
 kappa_exact = sum(1 for i in ids if A[i] == B[i]) / n
-tau_ceiling = kendalltau([A[i] for i in ids], [B[i] for i in ids]).correlation
+human_tau_ref = kendalltau([A[i] for i in ids], [B[i] for i in ids]).correlation
 
 def _wkappa(X, Y, K=3):
     O = [[0]*K for _ in range(K)]
@@ -83,29 +83,29 @@ def _kripp_alpha(X, Y):
     return 1 - (Do/(n*2))/De if De else float('nan')
 
 print(f"Held-out items: {n}  |  primary-rater disagreements adjudicated: {len(disagree)}")
-print(f"Inter-rater: exact agreement {kappa_exact:.3f}, weighted kappa {_wkappa(A, B):.3f}, "
-      f"Krippendorff alpha {_kripp_alpha(A, B):.3f}, Kendall tau (ceiling) {tau_ceiling:.3f}\n")
+print(f"Human-human agreement: exact {kappa_exact:.3f}, weighted kappa {_wkappa(A, B):.3f}, "
+      f"Krippendorff alpha {_kripp_alpha(A, B):.3f}, Kendall tau-b reference {human_tau_ref:.3f}\n")
 
-print(f"{'Score':22} {'held-out tau':>12}")
-print("-" * 36)
+print(f"{'Score':26} {'held-out tau-b':>14}")
+print("-" * 42)
 for name, g in [("BLEU-4", lambda i: met[i]["bleu4"]),
                 ("ROUGE-L", lambda i: met[i]["rouge_l"]),
                 ("CHRF++", lambda i: met[i]["chrf"]),
                 ("METEOR", lambda i: met[i]["meteor"]),
                 ("BM25", lambda i: met[i]["bm25"]),
                 ("BERTScore", lambda i: met[i]["bertscore"]),
-                ("raw NLI", lambda i: met[i]["dgf"]),
-                ("code-adapted NLI", lambda i: code_nli.get(i)),
+                ("raw BART-MNLI", lambda i: met[i]["dgf"]),
+                ("code-adapted Llama NLI", lambda i: code_nli.get(i)),
                 ("LLM judge (14B)", lambda i: judge14.get(i)),
                 ("LLM judge (32B)", lambda i: judge32.get(i))]:
-    print(f"{name:22} {tau(g):>+12.3f}")
+    print(f"{name:26} {tau(g):>+14.3f}")
 
 lo, hi = boot(lambda i: judge32.get(i))
-print(f"\nHeadline: LLM judge (32B) tau = {tau(lambda i: judge32.get(i)):+.3f}, "
+print(f"\nHeadline: LLM judge (32B) tau-b = {tau(lambda i: judge32.get(i)):+.3f}, "
       f"95% CI [{lo:+.3f}, {hi:+.3f}]")
-print(f"          = {tau(lambda i: judge32.get(i)) / tau_ceiling:.2f} of inter-rater agreement")
+print(f"          = {tau(lambda i: judge32.get(i)) / human_tau_ref:.2f} of the human-human agreement reference")
 
-# paired: judge vs strongest baseline (code-adapted NLI)
+# paired: judge vs strongest baseline (code-adapted Llama NLI)
 pts = [(judge32[i], code_nli.get(i), cons[i]) for i in ids if code_nli.get(i) is not None]
 d = []
 for _ in range(5000):
@@ -114,7 +114,7 @@ for _ in range(5000):
     t2 = kendalltau([b for _, b, _ in s], [c for _, _, c in s]).correlation
     d.append(t1 - t2)
 d.sort()
-print(f"Judge minus code-adapted NLI: mean {sum(d)/len(d):+.3f}, 95% CI [{d[125]:+.3f}, {d[4875]:+.3f}]")
+print(f"Judge minus code-adapted Llama NLI: mean {sum(d)/len(d):+.3f}, 95% CI [{d[125]:+.3f}, {d[4875]:+.3f}]")
 
 # prompt ablation: task-specific vs generic
 pts = [(judge32[i], generic[i], cons[i]) for i in ids]
@@ -153,8 +153,8 @@ for a, b in zip(h, jj): conf[a][b] += 1
 print("Confusion (rows = human 0/1/2, cols = judge 0/1/2):")
 for lab, row in enumerate(conf): print(f"  human={lab}: {row}")
 
-# ---- bootstrap CIs for the six overlap baselines (reseeded so each is order-independent) ----
-print("\nOverlap baselines, held-out tau with 95% bootstrap CI:")
+# ---- bootstrap CIs for the six text-similarity baselines (reseeded so each is order-independent) ----
+print("\nText-similarity baselines, held-out tau-b with 95% bootstrap CI:")
 for name, field in [("BLEU-4", "bleu4"), ("ROUGE-L", "rouge_l"), ("CHRF++", "chrf"),
                     ("METEOR", "meteor"), ("BM25", "bm25"), ("BERTScore", "bertscore")]:
     random.seed(20260720)

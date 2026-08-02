@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Recompute the standard reference-overlap metrics in their conventional form (candidate message
+Recompute the standard reference-similarity metrics in their conventional form (candidate message
 vs the developer's reference message) on the generated held-out candidates, and correlate them
-with the human faithfulness consensus. This complements scripts/analyze.py, which scores overlap
-against the diff; here overlap is scored against the gold developer message.
+with the human faithfulness consensus. This complements scripts/analyze.py, which scores text
+similarity against the diff; here similarity is scored against the gold developer message.
 
 A distinct reference exists only for the generated candidates (for gold candidates the reference
 is the message itself, a degenerate self-comparison), so the correlation is computed on the 120
@@ -78,7 +78,7 @@ def boot(xs, ys, R=5000):
     out.sort(); return out[int(.025 * R)], out[int(.975 * R)]
 
 print(f"Candidate-vs-gold reference metrics on {len(gen_ids)} generated held-out items\n")
-print(f"{'Metric (candidate vs gold)':26} {'tau':>8}   {'95% CI':>18}   sig")
+print(f"{'Metric (candidate vs gold)':26} {'tau-b':>8}   {'95% CI':>18}   sig")
 print("-" * 62)
 for name in ["BLEU-4", "ROUGE-L", "CHRF++", "METEOR"]:
     xs = rows[name]
@@ -87,4 +87,4 @@ for name in ["BLEU-4", "ROUGE-L", "CHRF++", "METEOR"]:
     lo, hi = boot(xs, labels)
     sig = "sig" if not (lo <= 0 <= hi) else "ns"
     print(f"{name:26} {t:>+8.3f}   [{lo:+.3f}, {hi:+.3f}]   {sig}")
-print("\nAll values remain far below the LLM judge (tau = 0.599; see scripts/analyze.py).")
+print("\nAll values remain far below the LLM judge (tau-b = 0.599; see scripts/analyze.py).")
