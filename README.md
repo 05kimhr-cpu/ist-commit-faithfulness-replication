@@ -49,7 +49,8 @@ data/
     dev_reference_metrics.jsonl  the same metrics on the development set
     code_nli.jsonl               code-adapted NLI score, held-out
 preregistration/
-  protocol.md                    the protocol fixed before labeling
+  protocol.md                    the protocol fixed before labeling (Korean, the sealed original)
+  protocol_en.md                 English translation of the above, added after the study
   seal.txt                       hash record of the frozen artifacts, internally timestamped
   DEVIATIONS.md                  where the executed study departed from the protocol
 MODEL_PINS.md                    models used, with configuration hashes
