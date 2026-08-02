@@ -10,8 +10,14 @@ record, not a public pre-registration: the ordering is auditable from the hashes
 but not independently certified.
 
 ## Confirmatory vs. post hoc
-- Confirmatory (frozen before labeling; predictions verify against the seal): the
-  primary judge (32B) and the same-family 14B judge.
+- Confirmatory: the pre-specified primary endpoint alone, that is the held-out
+  Kendall tau_b of the frozen 32B judge (`judge_32b.jsonl`) against the human
+  consensus, together with the success criterion defined in `protocol.md` section 8.
+- Also pre-specified and frozen before labeling, but secondary: the automatic
+  baselines the primary endpoint is compared against (`reference_metrics.jsonl`,
+  `code_nli.jsonl`; protocol section 7 item 2) and the same-family 14B robustness
+  analysis (`judge_14b.jsonl`; protocol section 2 and section 7 item 5). The protocol
+  lists the 14B analysis as a robustness check, not as a second headline.
 - Post hoc (computed after the labels were collected, reported as exploratory): the
   generic-prompt ablation (`judge_generic_prompt.jsonl`) and the cross-family
   Codestral check (`judge_codestral.jsonl`).
@@ -35,8 +41,8 @@ A second sealed artifact, the baseline score file `reference_metrics.jsonl` (sea
 had been fitted per item rather than over the corpus, which degenerates its IDF term, and we
 recomputed that one score at the corpus level. The correction changes the `bm25` field only: all
 other fields in the file (BLEU-4, ROUGE-L, CHRF++, METEOR, BERTScore, and the raw NLI score) are
-byte-identical to the sealed version, and the three prediction files that carry the confirmatory
-result (`judge_32b.jsonl`, `judge_14b.jsonl`, `code_nli.jsonl`) still verify against their sealed
+byte-identical to the sealed version, and the three prediction files behind the pre-specified
+analyses (`judge_32b.jsonl`, `judge_14b.jsonl`, `code_nli.jsonl`) still verify against their sealed
 hashes. BM25's held-out Kendall tau_b moves from -0.015 to +0.027, that is, from near zero to near
 zero; it was not the strongest baseline before or after the correction, and the pre-specified
 success criterion, which is defined against the code-adapted NLI baseline, is unaffected. We report
